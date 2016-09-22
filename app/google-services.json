@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "281219127127",
+    "firebase_url": "https://sharedchecklists.firebaseio.com",
+    "project_id": "sharedchecklists",
+    "storage_bucket": "sharedchecklists.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281219127127:android:f2d6682ed0ccd4de",
+        "android_client_info": {
+          "package_name": "net.piaw.sharedchecklist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281219127127-7n3rs1q3n4ma81r8h9j6st5ja7ptipr0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnd9P_ucdSptqJEElOMRw2hggHM7lAba0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
