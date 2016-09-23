@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -14,6 +16,11 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -42,11 +49,11 @@ public class FacebookLoginActivity extends Activity {
         mCallbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.facebook_login);
         Log.d(Tag, "Configuring LoginButton");
-        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        final LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         loginButton.setReadPermissions("email", "public_profile");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onSuccess(final LoginResult loginResult) {
                 Log.d(Tag, "facebook:onSuccess:" + loginResult);
                 GraphRequest request = GraphRequest.newMeRequest(
                         loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
@@ -58,6 +65,7 @@ public class FacebookLoginActivity extends Activity {
                                     mEmail = me.optString("email");
                                     mId = me.optString("id");
                                     Log.d(Tag, "email:" + mEmail);
+                                    handleFacebookAccessToken(loginResult.getAccessToken());
                                     // send email and id to your web server
                                 }
                             }
@@ -116,5 +124,31 @@ public class FacebookLoginActivity extends Activity {
         if (mAuthListener != null) {
             mAuth.removeAuthStateListener(mAuthListener);
         }
+    }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Log.d(TAG, "handleFacebookAccessToken:" + token);
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(Tag, "signInWithCredential:onComplete:" + task.isSuccessful());
+
+                        // If sign in fails, display a message to the user. If sign in succeeds
+                        // the auth state listener will be notified and logic to handle the
+                        // signed in user can be handled in the listener.
+                        if (!task.isSuccessful()) {
+                            Log.d(Tag, "signInWithCredential", task.getException());
+                            Toast.makeText(FacebookLoginActivity.this, "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Log.d(Tag, "sign in successful!");
+                        }
+
+                        // ...
+                    }
+                });
     }
 }
