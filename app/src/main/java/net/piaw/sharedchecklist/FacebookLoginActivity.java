@@ -55,25 +55,7 @@ public class FacebookLoginActivity extends Activity {
             @Override
             public void onSuccess(final LoginResult loginResult) {
                 Log.d(Tag, "facebook:onSuccess:" + loginResult);
-                GraphRequest request = GraphRequest.newMeRequest(
-                        loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-                            @Override
-                            public void onCompleted(JSONObject me, GraphResponse response) {
-                                if (response.getError() != null) {
-                                    // handle error
-                                } else {
-                                    mEmail = me.optString("email");
-                                    mId = me.optString("id");
-                                    Log.d(Tag, "email:" + mEmail);
-                                    handleFacebookAccessToken(loginResult.getAccessToken());
-                                    // send email and id to your web server
-                                }
-                            }
-                        });
-                Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,link,email,picture");
-                request.setParameters(parameters);
-                request.executeAsync();
+                getEmailAndIdGraphRequest(loginResult.getAccessToken());
             }
 
             @Override
@@ -88,6 +70,11 @@ public class FacebookLoginActivity extends Activity {
                 // ...
             }
         });
+
+        if (AccessToken.getCurrentAccessToken().getUserId() != "") {
+            Log.d(Tag, "User already logged in!");
+            GraphRequest request = getEmailAndIdGraphRequest(AccessToken.getCurrentAccessToken());
+        }
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -104,6 +91,29 @@ public class FacebookLoginActivity extends Activity {
             }
         };
 
+    }
+
+    private GraphRequest getEmailAndIdGraphRequest(final AccessToken accessToken) {
+        GraphRequest request = GraphRequest.newMeRequest(
+                accessToken, new GraphRequest.GraphJSONObjectCallback() {
+                    @Override
+                    public void onCompleted(JSONObject me, GraphResponse response) {
+                        if (response.getError() != null) {
+                            // handle error
+                        } else {
+                            mEmail = me.optString("email");
+                            mId = me.optString("id");
+                            Log.d(Tag, "email:" + mEmail);
+                            handleFacebookAccessToken(accessToken);
+                            // send email and id to your web server
+                        }
+                    }
+                });
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,link,email,picture");
+        request.setParameters(parameters);
+        request.executeAsync();
+        return request;
     }
 
     @Override

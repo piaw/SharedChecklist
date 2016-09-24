@@ -12,8 +12,8 @@ import android.widget.CheckedTextView;
  */
 
 public class ChecklistAdapter extends BaseAdapter {
-    ChecklistItem[] mItems;
-    Context mContext;
+    private ChecklistItem[] mItems;
+    private Context mContext;
 
     public ChecklistAdapter(Context context, ChecklistItem[] items) {
         mItems = items;
@@ -64,34 +64,7 @@ public class ChecklistAdapter extends BaseAdapter {
                 simpleCheckedTextView.setCheckMarkDrawable(0);
                 simpleCheckedTextView.setChecked(false);
             } else {
-// set cheek mark drawable and set checked property to true
-                mItems[mPos].setChecked(true);
-                simpleCheckedTextView.setCheckMarkDrawable(R.drawable.checked);
-                simpleCheckedTextView.setChecked(true);
-            }
-        }
-    }
-
-    class PosBasedOnClickListener implements CheckedTextView.OnClickListener {
-        int mPos;
-        View mView;
-
-        PosBasedOnClickListener(View view, int pos) {
-            mPos = pos;
-            mView = view;
-        }
-
-        @Override
-        public void onClick(View v) {
-            CheckedTextView simpleCheckedTextView = (CheckedTextView) v;
-
-            if (simpleCheckedTextView.isChecked()) {
-                // set cheek mark drawable and set checked property to false
-                mItems[mPos].setChecked(false);
-                simpleCheckedTextView.setCheckMarkDrawable(0);
-                simpleCheckedTextView.setChecked(false);
-            } else {
-// set cheek mark drawable and set checked property to true
+                // set check mark drawable and set checked property to true
                 mItems[mPos].setChecked(true);
                 simpleCheckedTextView.setCheckMarkDrawable(R.drawable.checked);
                 simpleCheckedTextView.setChecked(true);
