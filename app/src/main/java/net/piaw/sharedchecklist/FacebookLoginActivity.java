@@ -107,7 +107,8 @@ public class FacebookLoginActivity extends Activity {
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode,
+                                    final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
@@ -145,6 +146,9 @@ public class FacebookLoginActivity extends Activity {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(Tag, "sign in successful!");
+                            Intent intent = new Intent(getApplicationContext(),
+                                    ChecklistDisplay.class);
+                            startActivity(intent);
                         }
 
                         // ...
