@@ -1,36 +1,23 @@
 package net.piaw.sharedchecklist;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by piaw on 9/21/2016.
  */
 
-public class Checklist {
-    private boolean redirect;
-    private String redirect_key;  // user/checklist #
+public class Checklist implements Serializable {
+
     private String creator; // user email
     private String owner; // user email
+    private ArrayList<ChecklistItem> items;
+    private ArrayList<String> acl;
 
     Checklist() {
-        redirect = false;
-        redirect_key = "";
         creator = "";
         owner = "";
-    }
-
-    public boolean isRedirect() {
-        return redirect;
-    }
-
-    public void setRedirect(boolean redirect) {
-        this.redirect = redirect;
-    }
-
-    public String getRedirect_key() {
-        return redirect_key;
-    }
-
-    public void setRedirect_key(String redirect_key) {
-        this.redirect_key = redirect_key;
+        setItems(new ArrayList<ChecklistItem>());
     }
 
     public String getCreator() {
@@ -47,5 +34,29 @@ public class Checklist {
 
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    public ArrayList<ChecklistItem> getItems() {
+        return items;
+    }
+
+    public void setItems(ArrayList<ChecklistItem> items) {
+        this.items = items;
+    }
+
+    public void addItem(ChecklistItem item) {
+        items.add(item);
+    }
+
+    public ArrayList<String> getAcl() {
+        return acl;
+    }
+
+    public void setAcl(ArrayList<String> acl) {
+        this.acl = acl;
+    }
+
+    public void addAcl(String emailId) {
+        acl.add(emailId);
     }
 }

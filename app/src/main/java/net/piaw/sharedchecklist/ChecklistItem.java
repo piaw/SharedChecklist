@@ -1,12 +1,13 @@
 package net.piaw.sharedchecklist;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by piaw on 9/22/2016.
  */
 
-public class ChecklistItem {
+public class ChecklistItem implements Serializable {
     public static ArrayList<ChecklistItem> DummyTestItemData;
 
     static {
