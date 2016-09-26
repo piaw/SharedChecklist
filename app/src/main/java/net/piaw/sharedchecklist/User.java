@@ -13,7 +13,7 @@ public class User {
 
     public User() {
         email = "";
-        checklists = new ArrayList<String>();
+        checklists = new ArrayList<>();
         default_checklist = "";
     }
 

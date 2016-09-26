@@ -21,7 +21,9 @@ public class ChecklistDisplay extends AppCompatActivity {
         setSupportActionBar(checklistToolbar);
         ListView lv = (ListView) findViewById(R.id.checklistview);
         mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
-        assert (mChecklist != null);
+        if (BuildConfig.DEBUG && mChecklist == null) {
+            throw new RuntimeException("ASSERTION FAILED: mChecklist is NULL!");
+        }
 
         lv.setAdapter(new ChecklistAdapter(getBaseContext(),
                 mChecklist.getItems()));

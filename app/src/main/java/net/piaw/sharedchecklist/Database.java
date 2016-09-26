@@ -1,5 +1,6 @@
 package net.piaw.sharedchecklist;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
@@ -20,9 +21,9 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class Database {
+    @SuppressLint("StaticFieldLeak")
     private static Database mDB;
     private final String Tag = "Database";
-    private DatabaseReference mDatabase;
     private DatabaseReference mUserDB;
     private DatabaseReference mChecklistDB;
     private Activity mActivity;
@@ -30,7 +31,6 @@ public class Database {
     private User mUser;
 
     Database(String email, Activity activity) {
-        mDatabase = FirebaseDatabase.getInstance().getReference();
         mActivity = activity;
         mUserDB = FirebaseDatabase.getInstance().getReference().child("users");
         mChecklistDB = FirebaseDatabase.getInstance().getReference().child("checklists");
@@ -93,7 +93,7 @@ public class Database {
                 mUser = dataSnapshot.getValue(User.class);
 
                 // now retrieve default checklist
-                if (mUser.getDefault_checklist() != "") {
+                if (!mUser.getDefault_checklist().equals("")) {
                     Log.d(Tag, "User has default checklist!");
                     ValueEventListener cl_listener = new ChecklistListener();
                     mChecklistDB.child(mUser.getDefault_checklist()).

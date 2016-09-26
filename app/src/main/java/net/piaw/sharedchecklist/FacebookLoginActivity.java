@@ -71,7 +71,7 @@ public class FacebookLoginActivity extends Activity {
             }
         });
 
-        if (AccessToken.getCurrentAccessToken().getUserId() != "") {
+        if (!AccessToken.getCurrentAccessToken().getUserId().equals("")) {
             Log.d(Tag, "User already logged in!");
             GraphRequest request = getEmailAndIdGraphRequest(AccessToken.getCurrentAccessToken());
         }
@@ -105,7 +105,8 @@ public class FacebookLoginActivity extends Activity {
                     @Override
                     public void onCompleted(JSONObject me, GraphResponse response) {
                         if (response.getError() != null) {
-                            // handle error
+                            Toast.makeText(FacebookLoginActivity.this, "Cannot retrieve user e-mail",
+                                    Toast.LENGTH_SHORT).show();
                         } else {
                             mEmail = escapeEmailAddress(me.optString("email"));
                             mId = me.optString("id");

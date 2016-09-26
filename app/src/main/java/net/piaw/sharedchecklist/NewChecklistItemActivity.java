@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class NewChecklistItemActivity extends AppCompatActivity {
-    public final String Tag = "NewChecklistItemActivity";
+    public final String Tag = "NewChecklistItemActivit";
     EditText mChecklistLabel;
     Checklist mChecklist;
 
@@ -28,7 +28,9 @@ public class NewChecklistItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
-        assert (mChecklist != null);
+        if (BuildConfig.DEBUG && mChecklist == null) {
+            throw new RuntimeException("mChecklist is null!");
+        }
         setContentView(R.layout.activity_new_checklist_item);
         mChecklistLabel = (EditText) findViewById(R.id.new_checklist_item);
         mChecklistLabel.setOnEditorActionListener(new TextView.OnEditorActionListener() {
