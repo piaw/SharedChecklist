@@ -1,5 +1,8 @@
 package net.piaw.sharedchecklist;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -8,6 +11,7 @@ import java.util.ArrayList;
  */
 
 public class ChecklistItem implements Serializable {
+    private static final long serialVersionUID = -6661982485168319635L;
     public static ArrayList<ChecklistItem> DummyTestItemData;
 
     static {
@@ -97,5 +101,14 @@ public class ChecklistItem implements Serializable {
 
     public void setDeadline(Long deadline) {
         this.deadline = deadline;
+    }
+
+    private void readObject(ObjectInputStream inputStream)
+            throws ClassNotFoundException, IOException {
+        inputStream.defaultReadObject();
+    }
+
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
     }
 }

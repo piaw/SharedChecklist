@@ -20,6 +20,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
  */
 
 public class Database {
+    private static Database mDB;
     private final String Tag = "Database";
     private DatabaseReference mDatabase;
     private DatabaseReference mUserDB;
@@ -35,10 +36,23 @@ public class Database {
         mChecklistDB = FirebaseDatabase.getInstance().getReference().child("checklists");
         mEmail = email;
         ValueEventListener userListener = new UserListener();
+        Log.d(Tag, "AddingValueEventListener for user");
         mUserDB.child(mEmail).addValueEventListener(userListener);
     }
 
-    private void createDefaultChecklist() {
+    public static Database getDB() {
+        return mDB;
+    }
+
+    public static void setDB(Database db) {
+        mDB = db;
+    }
+
+    public String getEmail() {
+        return mEmail;
+    }
+
+    private Checklist createDefaultChecklist() {
         Checklist checklist = new Checklist();
         checklist.setCreator(mUser.getEmail());
         checklist.setOwner(mUser.getEmail());
@@ -46,34 +60,58 @@ public class Database {
         checklist.addAcl(mEmail);
 
         String checklist_id = mChecklistDB.push().getKey();
+        checklist.setId(checklist_id);
         mChecklistDB.child(checklist_id).setValue(checklist);
         mUser.setDefault_checklist(checklist_id);
         mUser.addChecklist(checklist_id);
         mUserDB.child(mEmail).setValue(mUser);
         mChecklistDB.child(checklist_id).setValue(checklist);
+
+        return checklist;
+    }
+
+    private void ShowChecklist(Checklist checklist) {
+        Log.d(Tag, "Showing checklist:" + checklist.getId());
+        Intent intent = new Intent(getApplicationContext(),
+                ChecklistDisplay.class);
+        intent.putExtra("checklist", checklist);
+        mActivity.startActivity(intent);
+    }
+
+    public void AddChecklistItem(Checklist cl, ChecklistItem item) {
+        Log.d(Tag, "Adding checklist item:" + item.getLabel() + " to:" + cl.getId());
+        cl.addItem(item);
+        mChecklistDB.child(cl.getId()).setValue(cl);
     }
 
     class UserListener implements ValueEventListener {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.d(Tag, "UserListener:onDataChange");
             if (dataSnapshot.exists()) {
+                Log.d(Tag, "User exists!");
                 mUser = dataSnapshot.getValue(User.class);
 
                 // now retrieve default checklist
                 if (mUser.getDefault_checklist() != "") {
+                    Log.d(Tag, "User has default checklist!");
                     ValueEventListener cl_listener = new ChecklistListener();
                     mChecklistDB.child(mUser.getDefault_checklist()).
                             addValueEventListener(cl_listener);
 
+                } else {
+                    Log.d(Tag, "Creating default checklist for existing user");
+                    ShowChecklist(createDefaultChecklist());
                 }
             } else {
+                Log.d(Tag, "Creating new user");
                 // user doesn't exist, now create new user
                 mUser = new User();
                 mUser.setEmail(mEmail);
                 // create new checklist as the default checklist
                 // note that createDefaultChecklist() also writes to the UserDB
                 // so we don't have to do it
-                createDefaultChecklist();
+                ShowChecklist(createDefaultChecklist());
             }
         }
 
@@ -88,16 +126,16 @@ public class Database {
     class ChecklistListener implements ValueEventListener {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.d(Tag, "ChecklistListener: onDataChange");
             if (dataSnapshot.exists()) {
+                Log.d(Tag, "Checklist exists!");
                 Checklist checklist = dataSnapshot.getValue(Checklist.class);
-                Intent intent = new Intent(getApplicationContext(),
-                        ChecklistDisplay.class);
-                intent.putExtra("checklist", checklist);
-                mActivity.startActivity(intent);
+                ShowChecklist(checklist);
             } else {
+                Log.d(Tag, "No default checklist --- creating");
                 // no existing checklist! create it. For now, just stick it into the
                 // Default checklist
-                createDefaultChecklist();
+                ShowChecklist(createDefaultChecklist());
             }
         }
 

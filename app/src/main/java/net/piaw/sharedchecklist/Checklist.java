@@ -1,5 +1,8 @@
 package net.piaw.sharedchecklist;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -9,15 +12,27 @@ import java.util.ArrayList;
 
 public class Checklist implements Serializable {
 
+    private static final long serialVersionUID = -6931513467134399532L;
+    private String id; // key for Checklist in DB
     private String creator; // user email
     private String owner; // user email
     private ArrayList<ChecklistItem> items;
     private ArrayList<String> acl;
 
     Checklist() {
+        id = "";
         creator = "";
         owner = "";
         setItems(new ArrayList<ChecklistItem>());
+        setAcl(new ArrayList<String>());
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCreator() {
@@ -58,5 +73,15 @@ public class Checklist implements Serializable {
 
     public void addAcl(String emailId) {
         acl.add(emailId);
+    }
+
+    private void readObject(ObjectInputStream inputStream)
+            throws ClassNotFoundException, IOException {
+        inputStream.defaultReadObject();
+    }
+
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        outputStream.defaultWriteObject();
+
     }
 }

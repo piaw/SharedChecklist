@@ -94,6 +94,11 @@ public class FacebookLoginActivity extends Activity {
 
     }
 
+    private String escapeEmailAddress(String email) {
+        // Replace '.' (not allowed in a Firebase key) with ',' (not allowed in an email address)
+        return email.toLowerCase().replaceAll("\\.", ",");
+    }
+
     private GraphRequest getEmailAndIdGraphRequest(final AccessToken accessToken) {
         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken, new GraphRequest.GraphJSONObjectCallback() {
@@ -102,7 +107,7 @@ public class FacebookLoginActivity extends Activity {
                         if (response.getError() != null) {
                             // handle error
                         } else {
-                            mEmail = me.optString("email");
+                            mEmail = escapeEmailAddress(me.optString("email"));
                             mId = me.optString("id");
                             Log.d(Tag, "email:" + mEmail);
                             handleFacebookAccessToken(accessToken);
@@ -157,9 +162,8 @@ public class FacebookLoginActivity extends Activity {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(Tag, "sign in successful!");
-                            Intent intent = new Intent(getApplicationContext(),
-                                    ChecklistDisplay.class);
-                            startActivity(intent);
+                            Database db = new Database(mEmail, FacebookLoginActivity.this);
+                            Database.setDB(db);
                         }
 
                         // ...
