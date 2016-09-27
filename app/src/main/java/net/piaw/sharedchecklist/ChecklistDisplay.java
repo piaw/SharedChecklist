@@ -3,6 +3,7 @@ package net.piaw.sharedchecklist;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -13,9 +14,14 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
-public class ChecklistDisplay extends AppCompatActivity {
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
+public class ChecklistDisplay extends AppCompatActivity implements ValueEventListener {
     final String Tag = "ChecklistDisplay";
     Checklist mChecklist;
+    ListView mLV;
     ShareActionProvider mShareActionProvider;
 
     @Override
@@ -24,15 +30,32 @@ public class ChecklistDisplay extends AppCompatActivity {
         setContentView(R.layout.activity_checklist_display);
         Toolbar checklistToolbar = (Toolbar) findViewById(R.id.checklist_toolbar);
         setSupportActionBar(checklistToolbar);
-        ListView lv = (ListView) findViewById(R.id.checklistview);
+        mLV = (ListView) findViewById(R.id.checklistview);
         mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
         if (BuildConfig.DEBUG && mChecklist == null) {
             throw new RuntimeException("ASSERTION FAILED: mChecklist is NULL!");
         }
 
-        lv.setAdapter(new ChecklistAdapter(getBaseContext(),
+        mLV.setAdapter(new ChecklistAdapter(getBaseContext(),
                 mChecklist.getItems()));
 
+        Database.getDB().getChecklistDB().child(mChecklist.getId())
+                .addValueEventListener(this);
+
+    }
+
+    @Override
+    public void onDataChange(DataSnapshot snapshot) {
+        Log.v(Tag, "onDataChange!");
+        mChecklist = snapshot.getValue(Checklist.class);
+        Log.v(Tag, "setting adapter!");
+        mLV.setAdapter(new ChecklistAdapter(getBaseContext(),
+                mChecklist.getItems()));
+    }
+
+    public void onCancelled(DatabaseError dberr) {
+        Log.v(Tag, "onCancelled");
+        Toast.makeText(this, "Database error!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -40,7 +63,7 @@ public class ChecklistDisplay extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_display, menu);
         MenuItem item = menu.findItem(R.id.action_share);
-        mShareActionProvider = (ShareActionProvider) item.getActionProvider();
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         if (mChecklist.getId().equals("")) {
             Log.e(Tag, "checklist id is null!");
             Toast.makeText(this, "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
@@ -73,9 +96,6 @@ public class ChecklistDisplay extends AppCompatActivity {
                 startActivity(intent);
                 return true;
 
-            case R.id.action_share:
-
-                return true;
 
             default:
                 // If we got here, the user's action was not recognized.

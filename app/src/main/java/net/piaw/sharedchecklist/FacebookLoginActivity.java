@@ -169,6 +169,12 @@ public class FacebookLoginActivity extends Activity {
                                     !(FacebookLoginActivity.this.getIntent()
                                             .getBooleanExtra("import", false)));
                             Database.setDB(db);
+                            if (getParent() == null) {
+                                setResult(Activity.RESULT_OK);
+                            } else {
+                                getParent().setResult(Activity.RESULT_OK);
+                            }
+                            finish();
                         }
 
                         // ...

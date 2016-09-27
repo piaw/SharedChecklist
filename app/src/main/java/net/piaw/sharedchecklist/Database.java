@@ -51,6 +51,10 @@ public class Database {
         mDB = db;
     }
 
+    DatabaseReference getChecklistDB() {
+        return mChecklistDB;
+    }
+
     public String getEmail() {
         return mEmail;
     }
@@ -68,11 +72,14 @@ public class Database {
     }
 
     public void fetchChecklistFromURI(Uri uri, FetchChecklistCallback cb) {
+        Log.d(Tag, "fetchChecklistfromURI:" + uri.toString());
         String url = uri.toString();
         String[] parts = url.split("/");
         // the tail is the checklistID
         String checklistId = parts[parts.length - 1];
-        mChecklistDB.addValueEventListener(new FetchChecklistCallbackListener(cb));
+        Log.d(Tag, "fetching:" + checklistId);
+        mChecklistDB.child(checklistId)
+                .addValueEventListener(new FetchChecklistCallbackListener(cb));
     }
 
     private Checklist createDefaultChecklist() {
@@ -122,6 +129,7 @@ public class Database {
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.v(Tag, "FetchCLCB:onDataChange");
             Checklist checklist = dataSnapshot.getValue(Checklist.class);
             mCB.onChecklistLoaded(checklist);
         }
