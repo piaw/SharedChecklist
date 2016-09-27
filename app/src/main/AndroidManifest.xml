@@ -52,6 +52,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".NewChecklistItemActivity"></activity>
+        <activity
+            android:name=".ImportSharedChecklist"
+            android:label="Import Shared Checklist">
+            <intent-filter android:label="Import Shared Checklist">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="scl.piaw.net"
+                    android:pathPrefix="/share"
+                    android:scheme="http" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

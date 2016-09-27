@@ -71,7 +71,8 @@ public class FacebookLoginActivity extends Activity {
             }
         });
 
-        if (!AccessToken.getCurrentAccessToken().getUserId().equals("")) {
+        if (AccessToken.getCurrentAccessToken() != null &&
+                !AccessToken.getCurrentAccessToken().getUserId().equals("")) {
             Log.d(Tag, "User already logged in!");
             GraphRequest request = getEmailAndIdGraphRequest(AccessToken.getCurrentAccessToken());
         }
@@ -163,7 +164,10 @@ public class FacebookLoginActivity extends Activity {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(Tag, "sign in successful!");
-                            Database db = new Database(mEmail, FacebookLoginActivity.this);
+                            Database db = new Database(mEmail, FacebookLoginActivity.this,
+                                    // only show on fetch if import!
+                                    !(FacebookLoginActivity.this.getIntent()
+                                            .getBooleanExtra("import", false)));
                             Database.setDB(db);
                         }
 

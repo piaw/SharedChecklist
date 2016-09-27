@@ -3,6 +3,7 @@ package net.piaw.sharedchecklist;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,15 +23,17 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class Database {
     @SuppressLint("StaticFieldLeak")
-    private static Database mDB;
+    private static Database mDB = null;
     private final String Tag = "Database";
+    private boolean mShowOnFetch;
     private DatabaseReference mUserDB;
     private DatabaseReference mChecklistDB;
     private Activity mActivity;
     private String mEmail;
     private User mUser;
 
-    Database(String email, Activity activity) {
+    Database(String email, Activity activity, boolean showOnFetch) {
+        mShowOnFetch = showOnFetch;
         mActivity = activity;
         mUserDB = FirebaseDatabase.getInstance().getReference().child("users");
         mChecklistDB = FirebaseDatabase.getInstance().getReference().child("checklists");
@@ -52,6 +55,26 @@ public class Database {
         return mEmail;
     }
 
+    public void setDefaultChecklist(Checklist cl) {
+        if (cl.getId().equals("")) {
+            Log.e(Tag, "checklist id is null!");
+            Toast.makeText(getApplicationContext(),
+                    "Checklist is corrupt", Toast.LENGTH_LONG).show();
+            return;
+        }
+        // assert mUser is valid!
+        mUser.setDefault_checklist(cl.getId());
+        mUserDB.child(mEmail).setValue(mUser);
+    }
+
+    public void fetchChecklistFromURI(Uri uri, FetchChecklistCallback cb) {
+        String url = uri.toString();
+        String[] parts = url.split("/");
+        // the tail is the checklistID
+        String checklistId = parts[parts.length - 1];
+        mChecklistDB.addValueEventListener(new FetchChecklistCallbackListener(cb));
+    }
+
     private Checklist createDefaultChecklist() {
         Checklist checklist = new Checklist();
         checklist.setCreator(mUser.getEmail());
@@ -71,6 +94,7 @@ public class Database {
     }
 
     private void ShowChecklist(Checklist checklist) {
+        if (!mShowOnFetch) return;
         Log.d(Tag, "Showing checklist:" + checklist.getId());
         Intent intent = new Intent(getApplicationContext(),
                 ChecklistDisplay.class);
@@ -82,6 +106,31 @@ public class Database {
         Log.d(Tag, "Adding checklist item:" + item.getLabel() + " to:" + cl.getId());
         cl.addItem(item);
         mChecklistDB.child(cl.getId()).setValue(cl);
+    }
+
+    public interface FetchChecklistCallback {
+        void onChecklistLoaded(Checklist cl);
+    }
+
+    private class FetchChecklistCallbackListener implements
+            ValueEventListener {
+        FetchChecklistCallback mCB;
+
+        FetchChecklistCallbackListener(FetchChecklistCallback cb) {
+            mCB = cb;
+        }
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            Checklist checklist = dataSnapshot.getValue(Checklist.class);
+            mCB.onChecklistLoaded(checklist);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+            Log.w(Tag, "FetchChecklist:cancelled!");
+            mCB.onChecklistLoaded(null);
+        }
     }
 
     class UserListener implements ValueEventListener {
