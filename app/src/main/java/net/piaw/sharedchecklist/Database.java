@@ -51,6 +51,15 @@ public class Database {
         mDB = db;
     }
 
+    public static Uri ConstructUriFromChecklistId(String cl_id) {
+        Uri.Builder build = new Uri.Builder();
+        build.scheme("http")
+                .authority("scl.piaw.net")
+                .appendPath("checklists")
+                .appendPath(cl_id);
+        return build.build();
+    }
+
     DatabaseReference getChecklistDB() {
         return mChecklistDB;
     }

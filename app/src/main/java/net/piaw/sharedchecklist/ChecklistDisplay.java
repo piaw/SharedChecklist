@@ -1,7 +1,6 @@
 package net.piaw.sharedchecklist;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -69,15 +68,11 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
             Toast.makeText(this, "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
             return false;
         }
-        // create URI
-        Uri.Builder build = new Uri.Builder();
-        build.scheme("http")
-                .authority("scl.piaw.net")
-                .appendPath("checklists")
-                .appendPath(mChecklist.getId());
+
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, build.toString());
+        shareIntent.putExtra(Intent.EXTRA_TEXT,
+                Database.ConstructUriFromChecklistId(mChecklist.getId()));
         mShareActionProvider.setShareIntent(shareIntent);
         return true;
     }
@@ -87,11 +82,14 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
+                Intent intent = new Intent(this, SettingsActivity.class);
+                intent.putExtra("checklist", mChecklist);
+                startActivity(intent);
                 return true;
 
             case R.id.action_add:
                 // Add a new checklist
-                Intent intent = new Intent(this, NewChecklistItemActivity.class);
+                intent = new Intent(this, NewChecklistItemActivity.class);
                 intent.putExtra("checklist", mChecklist);
                 startActivity(intent);
                 return true;
