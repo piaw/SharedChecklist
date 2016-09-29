@@ -14,6 +14,7 @@ public class Checklist implements Serializable {
 
     private static final long serialVersionUID = -6931513467134399532L;
     private String id; // key for Checklist in DB
+    private String checklist_name; // user-defined name for checklist --- unused for now
     private String creator; // user email
     private String owner; // user email
     private ArrayList<ChecklistItem> items;
@@ -23,6 +24,7 @@ public class Checklist implements Serializable {
         id = "";
         creator = "";
         owner = "";
+        checklist_name = "default";
         setItems(new ArrayList<ChecklistItem>());
         setAcl(new ArrayList<String>());
     }
@@ -83,5 +85,13 @@ public class Checklist implements Serializable {
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         outputStream.defaultWriteObject();
 
+    }
+
+    public String getChecklist_name() {
+        return checklist_name;
+    }
+
+    public void setChecklist_name(String checklist_name) {
+        this.checklist_name = checklist_name;
     }
 }

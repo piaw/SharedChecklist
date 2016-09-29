@@ -124,6 +124,11 @@ public class Database {
         mChecklistDB.child(cl.getId()).setValue(cl);
     }
 
+    public void UpdateChecklist(Checklist cl) {
+        Log.d(Tag, "Updating checklist:" + cl.getId());
+        mChecklistDB.child(cl.getId()).setValue(cl);
+    }
+
     public interface FetchChecklistCallback {
         void onChecklistLoaded(Checklist cl);
     }

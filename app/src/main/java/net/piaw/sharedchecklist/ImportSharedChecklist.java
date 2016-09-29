@@ -74,8 +74,7 @@ public class ImportSharedChecklist extends AppCompatActivity
         mAccept = (Button) findViewById(R.id.accept_share);
         mReject = (Button) findViewById(R.id.reject_share);
 
-        mLV.setAdapter(new ChecklistAdapter(getBaseContext(),
-                cl.getItems()));
+        mLV.setAdapter(new ChecklistAdapter(this, cl));
         mAccept.setOnClickListener(new AcceptShare());
         mReject.setOnClickListener(new View.OnClickListener() {
             @Override

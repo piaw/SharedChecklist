@@ -48,6 +48,7 @@ public class NewChecklistItemActivity extends AppCompatActivity {
 
         public void onClick(View view) {
             AddNewChecklistItem();
+            finish();
         }
     }
 

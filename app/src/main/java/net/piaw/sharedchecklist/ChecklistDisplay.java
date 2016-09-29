@@ -18,6 +18,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
 public class ChecklistDisplay extends AppCompatActivity implements ValueEventListener {
+    public final int DISPLAY_SETTINGS = 0;
     final String Tag = "ChecklistDisplay";
     Checklist mChecklist;
     ListView mLV;
@@ -35,8 +36,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
             throw new RuntimeException("ASSERTION FAILED: mChecklist is NULL!");
         }
 
-        mLV.setAdapter(new ChecklistAdapter(getBaseContext(),
-                mChecklist.getItems()));
+        mLV.setAdapter(new ChecklistAdapter(this, mChecklist));
 
         Database.getDB().getChecklistDB().child(mChecklist.getId())
                 .addValueEventListener(this);
@@ -48,8 +48,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         Log.v(Tag, "onDataChange!");
         mChecklist = snapshot.getValue(Checklist.class);
         Log.v(Tag, "setting adapter!");
-        mLV.setAdapter(new ChecklistAdapter(getBaseContext(),
-                mChecklist.getItems()));
+        mLV.setAdapter(new ChecklistAdapter(this, mChecklist));
     }
 
     public void onCancelled(DatabaseError dberr) {
@@ -78,13 +77,19 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // might as well refresh everything
+        mLV.setAdapter(new ChecklistAdapter(this, mChecklist));
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
                 Intent intent = new Intent(this, SettingsActivity.class);
                 intent.putExtra("checklist", mChecklist);
-                startActivity(intent);
+                startActivityForResult(intent, DISPLAY_SETTINGS);
                 return true;
 
             case R.id.action_add:
