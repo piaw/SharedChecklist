@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:minHeight="?android:attr/listPreferredItemHeight"
-        android:textAlignment="viewEnd("
+        android:textAlignment="viewEnd"
         android:textSize="8pt"
         android:textStyle="normal" />
 

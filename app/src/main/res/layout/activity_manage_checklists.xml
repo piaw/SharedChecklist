@@ -24,5 +24,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/manage_checklists_toolbar"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:choiceMode="singleChoice"
+        android:divider="@null"
+        android:dividerHeight="0.0sp"
+        android:drawSelectorOnTop="false"
+        android:listSelector="@android:color/darker_gray" />
 </RelativeLayout>

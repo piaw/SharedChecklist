@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -108,14 +109,23 @@ public class Database {
         checklist.setItems(new ArrayList<ChecklistItem>());
         checklist.addAcl(mEmail);
 
+        checklist = CreateChecklist(checklist);
+        UpdateDefaultChecklist(checklist);
+        return checklist;
+    }
+
+    public void UpdateDefaultChecklist(Checklist cl) {
+        mUser.setDefault_checklist(cl.getId());
+        mUserDB.child(mEmail).setValue(mUser);
+    }
+
+    @NonNull
+    public Checklist CreateChecklist(Checklist checklist) {
         String checklist_id = mChecklistDB.push().getKey();
         checklist.setId(checklist_id);
         mChecklistDB.child(checklist_id).setValue(checklist);
-        mUser.setDefault_checklist(checklist_id);
         mUser.addChecklist(checklist_id);
         mUserDB.child(mEmail).setValue(mUser);
-        mChecklistDB.child(checklist_id).setValue(checklist);
-
         return checklist;
     }
 

@@ -48,7 +48,7 @@ public class Settings {
         SharedPreferences.Editor editor = mSharedPref.edit();
         editor.putBoolean("hide-if-checked", isHideIfChecked());
         editor.putBoolean("strikethrough-if-checked", isStrikethroughIfChecked());
-        editor.commit();
+        editor.apply();
     }
 
 }
