@@ -8,15 +8,12 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_share"
-        android:icon="@drawable/share"
-        android:title="Share"
-        app:actionProviderClass="android.support.v7.widget.ShareActionProvider"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/action_settings"
         android:title="Settings"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_manage"
+        android:title="Manage Checklists"
         app:showAsAction="never" />
 
 </menu>

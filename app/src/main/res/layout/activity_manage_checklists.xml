@@ -10,4 +10,19 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="net.piaw.sharedchecklist.ManageChecklists">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/manage_checklists_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+
+    <ListView
+        android:id="@+id/manage_checklists_listview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/manage_checklists_toolbar"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

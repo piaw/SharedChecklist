@@ -9,11 +9,14 @@ import java.util.ArrayList;
 public class User {
     private String email;
     private ArrayList<String> checklists;
+    private ArrayList<String> pending_checklists;
     private String default_checklist;
+    private boolean isPro;
 
     public User() {
         email = "";
         checklists = new ArrayList<>();
+        pending_checklists = new ArrayList<>();
         default_checklist = "";
     }
 
@@ -43,5 +46,21 @@ public class User {
 
     public void setDefault_checklist(String default_checklist) {
         this.default_checklist = default_checklist;
+    }
+
+    public ArrayList<String> getPending_checklists() {
+        return pending_checklists;
+    }
+
+    public void setPending_checklists(ArrayList<String> pending_checklists) {
+        this.pending_checklists = pending_checklists;
+    }
+
+    public boolean isPro() {
+        return isPro;
+    }
+
+    public void setPro(boolean pro) {
+        isPro = pro;
     }
 }

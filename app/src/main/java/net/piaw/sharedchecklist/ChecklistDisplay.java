@@ -2,7 +2,6 @@ package net.piaw.sharedchecklist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -32,6 +31,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         setSupportActionBar(checklistToolbar);
         mLV = (ListView) findViewById(R.id.checklistview);
         mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
+        getSupportActionBar().setTitle("Checklist:" + mChecklist.getChecklist_name());
         if (BuildConfig.DEBUG && mChecklist == null) {
             throw new RuntimeException("ASSERTION FAILED: mChecklist is NULL!");
         }
@@ -60,19 +60,11 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_display, menu);
-        MenuItem item = menu.findItem(R.id.action_share);
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
         if (mChecklist.getId().equals("")) {
             Log.e(Tag, "checklist id is null!");
             Toast.makeText(this, "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
             return false;
         }
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT,
-                Database.ConstructUriFromChecklistId(mChecklist.getId()));
-        mShareActionProvider.setShareIntent(shareIntent);
         return true;
     }
 
@@ -99,6 +91,11 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
                 startActivity(intent);
                 return true;
 
+            case R.id.action_manage:
+                // manage checklists
+                intent = new Intent(this, ManageChecklists.class);
+                startActivity(intent);
+                return true;
 
             default:
                 // If we got here, the user's action was not recognized.

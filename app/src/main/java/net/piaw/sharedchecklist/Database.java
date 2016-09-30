@@ -33,6 +33,7 @@ public class Database {
     private User mUser;
 
     Database(String email, Activity activity, boolean showOnFetch) {
+        Log.v(Tag, "instantiating database");
         mShowOnFetch = showOnFetch;
         mActivity = activity;
         mUserDB = FirebaseDatabase.getInstance().getReference().child("users");
@@ -64,6 +65,10 @@ public class Database {
         return mChecklistDB;
     }
 
+    public User getUser() {
+        return mUser;
+    }
+
     public String getEmail() {
         return mEmail;
     }
@@ -87,6 +92,11 @@ public class Database {
         // the tail is the checklistID
         String checklistId = parts[parts.length - 1];
         Log.d(Tag, "fetching:" + checklistId);
+        FetchChecklist(cb, checklistId);
+    }
+
+    public void FetchChecklist(FetchChecklistCallback cb, String checklistId) {
+        Log.v(Tag, "Fetching checklist:" + checklistId);
         mChecklistDB.child(checklistId)
                 .addValueEventListener(new FetchChecklistCallbackListener(cb));
     }

@@ -1,4 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/checklist_add"
+        android:icon="@drawable/plus"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/checklist_delete"
+        android:icon="@drawable/delete"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/checklist_share"
+        android:icon="@drawable/share"
+        android:title="Share"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/checklist_copy"
+        android:title="Copy"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/show_pending"
+        android:title="Pending Checklists"
+        app:showAsAction="never" />
 
 </menu>
