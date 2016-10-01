@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -38,7 +39,16 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
         mUser = Database.getDB().getUser();
         Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) findViewById(R.id.manage_checklists_listview);
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists);
+        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Checklist cl = (Checklist) v.getTag();
+                Intent intent = new Intent(ManageChecklists.this, ChecklistDisplay.class);
+                intent.putExtra("checklist", cl);
+                startActivity(intent);
+                return true;
+            }
+        });
         mLV.setAdapter(mAdapter);
     }
 
@@ -94,7 +104,16 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
             synchronized (mChecklists) {
                 mChecklists.add(cl);
             }
-            mAdapter = new ManageChecklistsAdapter(this, mChecklists);
+            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    Checklist cl = (Checklist) v.getTag();
+                    Intent intent = new Intent(ManageChecklists.this, ChecklistDisplay.class);
+                    intent.putExtra("checklist", cl);
+                    startActivity(intent);
+                    return true;
+                }
+            });
             mLV.setAdapter(mAdapter);
         }
     }
@@ -148,6 +167,11 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 intent = new Intent(this, ShareChecklistActivity.class);
                 intent.putExtra("checklist", cl);
                 startActivity(intent);
+                return true;
+
+            case R.id.show_pending:
+                intent = new Intent(this, ManagePendingActivity.class);
+                startActivityForResult(intent, REFRESH_REQUIRED);
                 return true;
 
             default:

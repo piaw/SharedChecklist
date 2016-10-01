@@ -1,7 +1,6 @@
 package net.piaw.sharedchecklist;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
@@ -20,11 +19,14 @@ public class ManageChecklistsAdapter extends BaseAdapter {
     Activity mActivity;
     ArrayList<Checklist> mChecklists;
     Checklist mCurrentSelected;
+    View.OnLongClickListener longClickListener;
 
-    ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists) {
+    ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists,
+                            View.OnLongClickListener longClickListener) {
         mActivity = activity;
         mChecklists = checklists;
         mCurrentSelected = null;
+        this.longClickListener = longClickListener;
     }
 
     @Override
@@ -75,16 +77,7 @@ public class ManageChecklistsAdapter extends BaseAdapter {
                 ManageChecklistsAdapter.this.notifyDataSetChanged();
             }
         });
-        view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Checklist cl = (Checklist) v.getTag();
-                Intent intent = new Intent(mActivity, ChecklistDisplay.class);
-                intent.putExtra("checklist", cl);
-                mActivity.startActivity(intent);
-                return true;
-            }
-        });
+        view.setOnLongClickListener(longClickListener);
         return view;
     }
 }
