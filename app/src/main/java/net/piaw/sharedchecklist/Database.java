@@ -53,17 +53,12 @@ public class Database {
         mDB = db;
     }
 
-    public static Uri ConstructUriFromChecklistId(String cl_id) {
-        Uri.Builder build = new Uri.Builder();
-        build.scheme("http")
-                .authority("scl.piaw.net")
-                .appendPath("checklists")
-                .appendPath(cl_id);
-        return build.build();
-    }
-
     DatabaseReference getChecklistDB() {
         return mChecklistDB;
+    }
+
+    DatabaseReference getUserDB() {
+        return mUserDB;
     }
 
     public User getUser() {
@@ -100,6 +95,14 @@ public class Database {
         Log.v(Tag, "Fetching checklist:" + checklistId);
         mChecklistDB.child(checklistId)
                 .addValueEventListener(new FetchChecklistCallbackListener(cb));
+    }
+
+    public void UpdateUser() {
+        mUserDB.child(mEmail).setValue(mUser);
+    }
+
+    public void DeleteChecklist(Checklist cl) {
+        mChecklistDB.child(cl.getId()).removeValue();
     }
 
     private Checklist createDefaultChecklist() {

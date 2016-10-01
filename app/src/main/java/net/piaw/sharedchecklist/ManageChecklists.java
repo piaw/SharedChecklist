@@ -11,14 +11,20 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 
-public class ManageChecklists extends AppCompatActivity implements Database.FetchChecklistCallback {
+public class ManageChecklists extends AppCompatActivity implements Database.FetchChecklistCallback,
+        ValueEventListener {
     public final String Tag = "ManageChecklists";
     public final int REFRESH_REQUIRED = 0;
     ArrayList<Checklist> mChecklists;
     ListView mLV;
     ManageChecklistsAdapter mAdapter;
+    User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +35,9 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
         setSupportActionBar(manage_checklist_toolbar);
         getSupportActionBar().setTitle("Manage Checklists");
         mChecklists = new ArrayList<>();
+        mUser = Database.getDB().getUser();
+        Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) findViewById(R.id.manage_checklists_listview);
-        refreshChecklists();
         mAdapter = new ManageChecklistsAdapter(this, mChecklists);
         mLV.setAdapter(mAdapter);
     }
@@ -66,6 +73,19 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
         refreshChecklists();
     }
 
+    public void onDataChange(DataSnapshot snapshot) {
+        Log.v(Tag, "onDataChange!");
+        mUser = snapshot.getValue(User.class);
+        Log.v(Tag, "setting adapter!");
+        refreshChecklists();
+        mAdapter.notifyDataSetChanged();
+    }
+
+    public void onCancelled(DatabaseError dberr) {
+        Log.v(Tag, "onCancelled");
+        Toast.makeText(this, "Database error!", Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     public void onChecklistLoaded(Checklist cl) {
         Log.v(Tag, "onChecklist Loaded!");
@@ -89,7 +109,28 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 return true;
 
             case R.id.checklist_delete:
-                // Add a new checklist
+                //  delete a checklist
+                Checklist cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                User user = Database.getDB().getUser();
+                if (cl.getId().equals(user.getDefault_checklist())) {
+                    Toast.makeText(this, "Cannot delete default checklist!", Toast.LENGTH_SHORT)
+                            .show();
+                    return true;
+                }
+                if (!cl.getOwner().equals(user.getEmail())) {
+                    Toast.makeText(this, "Not owner. Cannot delete." + cl.getOwner(),
+                            Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "you:" + user.getEmail(), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                user.getChecklists().remove(cl);
+                Database.getDB().UpdateUser();
+                Database.getDB().DeleteChecklist(cl);
+
                 return true;
 
             case R.id.checklist_copy:
@@ -97,6 +138,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 return true;
 
             case R.id.checklist_share:
+                // share with another user
                 return true;
 
             default:

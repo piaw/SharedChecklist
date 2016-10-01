@@ -1,7 +1,6 @@
 package net.piaw.sharedchecklist;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -74,8 +73,7 @@ public class SettingsActivity extends AppCompatActivity {
         public void onClick(View v) {
             String new_default_cl_id = mDefaultChecklist.getText().toString();
 
-            Uri new_uri = Database.ConstructUriFromChecklistId(new_default_cl_id);
-            Database.getDB().fetchChecklistFromURI(new_uri, this);
+            Database.getDB().FetchChecklist(this, new_default_cl_id);
         }
     }
 }
