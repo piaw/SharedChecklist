@@ -32,11 +32,6 @@ public class ManageChecklistsAdapter extends BaseAdapter {
         return mChecklists.size();
     }
 
-    private String unEscapeEmailAddress(String email) {
-        // Replace ',' (not allowed in a Firebase key) with '.' (not allowed in an email address)
-        return email.toLowerCase().replaceAll(",", "\\.");
-    }
-
     private Checklist fetchChecklistAt(int i) {
         return mChecklists.get(i);
     }
@@ -63,7 +58,7 @@ public class ManageChecklistsAdapter extends BaseAdapter {
         TextView cl_num_entries = (TextView) view.findViewById(R.id.cl_num_entries);
         Checklist cl = fetchChecklistAt(pos);
         cl_name.setText(cl.getChecklist_name());
-        cl_owner.setText(unEscapeEmailAddress(cl.getOwner()));
+        cl_owner.setText(Database.unEscapeEmailAddress(cl.getOwner()));
         cl_num_entries.setText(Integer.toString(cl.getItems().size()));
         if (mCurrentSelected == cl) {
             view.setBackgroundColor(Color.YELLOW);

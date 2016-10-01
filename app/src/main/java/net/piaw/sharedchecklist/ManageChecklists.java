@@ -101,6 +101,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Checklist cl;
         switch (item.getItemId()) {
             case R.id.checklist_add:
                 // User chose the "Settings" item, show the app settings UI...
@@ -110,7 +111,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
 
             case R.id.checklist_delete:
                 //  delete a checklist
-                Checklist cl = mAdapter.getCurrentSelected();
+                cl = mAdapter.getCurrentSelected();
                 if (cl == null) {
                     Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
                     return true;
@@ -139,6 +140,14 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
 
             case R.id.checklist_share:
                 // share with another user
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                intent = new Intent(this, ShareChecklistActivity.class);
+                intent.putExtra("checklist", cl);
+                startActivity(intent);
                 return true;
 
             default:

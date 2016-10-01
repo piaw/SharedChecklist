@@ -95,11 +95,6 @@ public class FacebookLoginActivity extends Activity {
 
     }
 
-    private String escapeEmailAddress(String email) {
-        // Replace '.' (not allowed in a Firebase key) with ',' (not allowed in an email address)
-        return email.toLowerCase().replaceAll("\\.", ",");
-    }
-
     private GraphRequest getEmailAndIdGraphRequest(final AccessToken accessToken) {
         GraphRequest request = GraphRequest.newMeRequest(
                 accessToken, new GraphRequest.GraphJSONObjectCallback() {
@@ -109,7 +104,7 @@ public class FacebookLoginActivity extends Activity {
                             Toast.makeText(FacebookLoginActivity.this, "Cannot retrieve user e-mail",
                                     Toast.LENGTH_SHORT).show();
                         } else {
-                            mEmail = escapeEmailAddress(me.optString("email"));
+                            mEmail = Database.escapeEmailAddress(me.optString("email"));
                             mId = me.optString("id");
                             Log.d(Tag, "email:" + mEmail);
                             handleFacebookAccessToken(accessToken);

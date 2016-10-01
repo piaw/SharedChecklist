@@ -56,6 +56,10 @@ public class User {
         this.pending_checklists = pending_checklists;
     }
 
+    public void addPending_checklist(String pending_checklist) {
+        pending_checklists.add(pending_checklist);
+    }
+
     public boolean isPro() {
         return isPro;
     }

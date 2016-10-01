@@ -42,7 +42,7 @@ public class Database {
         mEmail = email;
         ValueEventListener userListener = new UserListener();
         Log.d(Tag, "AddingValueEventListener for user");
-        mUserDB.child(mEmail).addValueEventListener(userListener);
+        mUserDB.child(mEmail).addListenerForSingleValueEvent(userListener);
     }
 
     public static Database getDB() {
@@ -51,6 +51,16 @@ public class Database {
 
     public static void setDB(Database db) {
         mDB = db;
+    }
+
+    public static String unEscapeEmailAddress(String email) {
+        // Replace ',' (not allowed in a Firebase key) with '.' (not allowed in an email address)
+        return email.toLowerCase().replaceAll(",", "\\.");
+    }
+
+    public static String escapeEmailAddress(String email) {
+        // Replace '.' (not allowed in a Firebase key) with ',' (not allowed in an email address)
+        return email.toLowerCase().replaceAll("\\.", ",");
     }
 
     DatabaseReference getChecklistDB() {
@@ -94,11 +104,15 @@ public class Database {
     public void FetchChecklist(FetchChecklistCallback cb, String checklistId) {
         Log.v(Tag, "Fetching checklist:" + checklistId);
         mChecklistDB.child(checklistId)
-                .addValueEventListener(new FetchChecklistCallbackListener(cb));
+                .addListenerForSingleValueEvent(new FetchChecklistCallbackListener(cb));
     }
 
     public void UpdateUser() {
         mUserDB.child(mEmail).setValue(mUser);
+    }
+
+    public void UpdateUser(User user) {
+        mUserDB.child(user.getEmail()).setValue(user);
     }
 
     public void DeleteChecklist(Checklist cl) {
@@ -152,8 +166,35 @@ public class Database {
         mChecklistDB.child(cl.getId()).setValue(cl);
     }
 
+    public void FetchUser(FetchUserCallback cb, String email) {
+        mUserDB.child(email).addListenerForSingleValueEvent(new FetchUserCallbackListener(cb));
+    }
+
+    public interface FetchUserCallback {
+        void onUserLoaded(User user);
+    }
+
     public interface FetchChecklistCallback {
         void onChecklistLoaded(Checklist cl);
+    }
+
+    private class FetchUserCallbackListener implements ValueEventListener {
+        FetchUserCallback mCB;
+
+        FetchUserCallbackListener(FetchUserCallback cb) {
+            mCB = cb;
+        }
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+            User user = dataSnapshot.getValue(User.class);
+            mCB.onUserLoaded(user);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError dberr) {
+            mCB.onUserLoaded(null);
+        }
     }
 
     private class FetchChecklistCallbackListener implements
@@ -191,7 +232,7 @@ public class Database {
                     Log.d(Tag, "User has default checklist!");
                     ValueEventListener cl_listener = new ChecklistListener();
                     mChecklistDB.child(mUser.getDefault_checklist()).
-                            addValueEventListener(cl_listener);
+                            addListenerForSingleValueEvent(cl_listener);
 
                 } else {
                     Log.d(Tag, "Creating default checklist for existing user");
