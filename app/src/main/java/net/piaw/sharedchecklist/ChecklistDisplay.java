@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -21,6 +23,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     final String Tag = "ChecklistDisplay";
     Checklist mChecklist;
     ListView mLV;
+    ChecklistAdapter mAdapter;
     ShareActionProvider mShareActionProvider;
 
     @Override
@@ -30,13 +33,14 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         Toolbar checklistToolbar = (Toolbar) findViewById(R.id.checklist_toolbar);
         setSupportActionBar(checklistToolbar);
         mLV = (ListView) findViewById(R.id.checklistview);
+        mLV.setItemsCanFocus(true);
         mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
         getSupportActionBar().setTitle("Checklist:" + mChecklist.getChecklist_name());
         if (BuildConfig.DEBUG && mChecklist == null) {
             throw new RuntimeException("ASSERTION FAILED: mChecklist is NULL!");
         }
 
-        mLV.setAdapter(new ChecklistAdapter(this, mChecklist));
+        mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
 
         Database.getDB().getChecklistDB().child(mChecklist.getId())
                 .addValueEventListener(this);
@@ -48,7 +52,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         Log.v(Tag, "onDataChange!");
         mChecklist = snapshot.getValue(Checklist.class);
         Log.v(Tag, "setting adapter!");
-        mLV.setAdapter(new ChecklistAdapter(this, mChecklist));
+        mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
     }
 
     public void onCancelled(DatabaseError dberr) {
@@ -71,7 +75,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // might as well refresh everything
-        mLV.setAdapter(new ChecklistAdapter(this, mChecklist));
+        mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
     }
 
     @Override
@@ -86,9 +90,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
 
             case R.id.action_add:
                 // Add a new checklist
-                intent = new Intent(this, NewChecklistItemActivity.class);
-                intent.putExtra("checklist", mChecklist);
-                startActivity(intent);
+                mAdapter.addNewChecklistItem();
                 return true;
 
             case R.id.action_manage:
