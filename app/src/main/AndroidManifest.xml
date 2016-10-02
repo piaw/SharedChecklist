@@ -14,10 +14,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
             android:name=".FacebookLoginActivity"
             android:label="SharedChecklist">
@@ -45,8 +42,6 @@
         </activity>
         <activity android:name=".ChecklistDisplay">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -54,19 +49,13 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ManageChecklists">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".NewChecklistActivity" />
         <activity android:name=".ShareChecklistActivity" />
         <activity android:name=".ManagePendingActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".ViewPendingActivity"></activity>
     </application>
