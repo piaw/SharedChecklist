@@ -28,4 +28,9 @@
         android:title="Pending Checklists"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/make_default"
+        android:title="Make Default"
+        app:showAsAction="never" />
+
 </menu>

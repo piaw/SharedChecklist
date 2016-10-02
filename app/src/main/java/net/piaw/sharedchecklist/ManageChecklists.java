@@ -185,6 +185,17 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 startActivityForResult(intent, REFRESH_REQUIRED);
                 return true;
 
+            case R.id.make_default:
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                user = Database.getDB().getUser();
+                user.setDefault_checklist(cl.getId());
+                Database.getDB().UpdateUser();
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
