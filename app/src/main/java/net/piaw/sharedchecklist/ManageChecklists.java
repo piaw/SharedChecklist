@@ -43,13 +43,17 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
             @Override
             public boolean onLongClick(View v) {
                 Checklist cl = (Checklist) v.getTag();
-                Intent intent = new Intent(ManageChecklists.this, ChecklistDisplay.class);
-                intent.putExtra("checklist", cl);
-                startActivity(intent);
+                ViewChecklist(cl);
                 return true;
             }
         });
         mLV.setAdapter(mAdapter);
+    }
+
+    private void ViewChecklist(Checklist cl) {
+        Intent intent = new Intent(this, ChecklistDisplay.class);
+        intent.putExtra("checklist", cl);
+        startActivity(intent);
     }
 
     private void refreshChecklists() {
@@ -108,9 +112,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 @Override
                 public boolean onLongClick(View v) {
                     Checklist cl = (Checklist) v.getTag();
-                    Intent intent = new Intent(ManageChecklists.this, ChecklistDisplay.class);
-                    intent.putExtra("checklist", cl);
-                    startActivity(intent);
+                    ViewChecklist(cl);
                     return true;
                 }
             });
@@ -194,6 +196,15 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 user = Database.getDB().getUser();
                 user.setDefault_checklist(cl.getId());
                 Database.getDB().UpdateUser();
+                return true;
+
+            case R.id.open_checklist:
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                ViewChecklist(cl);
                 return true;
 
             default:

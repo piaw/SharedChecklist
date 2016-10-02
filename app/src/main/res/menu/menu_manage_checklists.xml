@@ -33,4 +33,9 @@
         android:title="Make Default"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/open_checklist"
+        android:title="Open"
+        app:showAsAction="never" />
+
 </menu>
