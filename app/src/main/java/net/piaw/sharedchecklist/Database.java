@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -146,6 +147,11 @@ public class Database {
         return checklist;
     }
 
+    public void SharedChecklistNotificationOn(SharedChecklistCallback cb) {
+        mUserDB.child(mEmail).child("pending_checklists").
+                addChildEventListener(new SharedChecklistEventListener((cb)));
+    }
+
     private void ShowChecklist(Checklist checklist) {
         if (!mShowOnFetch) return;
         Log.d(Tag, "Showing checklist:" + checklist.getId());
@@ -170,12 +176,47 @@ public class Database {
         mUserDB.child(email).addListenerForSingleValueEvent(new FetchUserCallbackListener(cb));
     }
 
+    public interface SharedChecklistCallback {
+        void onSharedChecklist(String clId);
+    }
+
     public interface FetchUserCallback {
         void onUserLoaded(User user);
     }
 
     public interface FetchChecklistCallback {
         void onChecklistLoaded(Checklist cl);
+    }
+
+    class SharedChecklistEventListener implements ChildEventListener {
+        SharedChecklistCallback mCB;
+
+        SharedChecklistEventListener(SharedChecklistCallback cb) {
+            mCB = cb;
+        }
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String prevChildName) {
+            String checklist_id = dataSnapshot.getValue(String.class);
+            mCB.onSharedChecklist(checklist_id);
+        }
+
+        @Override
+        public void onCancelled(DatabaseError err) {
+            // ignore
+        }
+
+        public void onChildChanged(DataSnapshot snapshot, String previousChildName) {
+            // ignore
+        }
+
+        public void onChildMoved(DataSnapshot snapshot, String previousChildName) {
+            // ignore
+        }
+
+        public void onChildRemoved(DataSnapshot snapshot) {
+            // ignore
+        }
     }
 
     private class FetchUserCallbackListener implements ValueEventListener {

@@ -39,9 +39,7 @@ public class Checklist implements Serializable {
             ChecklistItem item_copy = items.get(i).DeepCopy();
             copy.items.add(item_copy);
         }
-        for (int i = 0; i < acl.size(); ++i) {
-            copy.acl.add(acl.get(i));
-        }
+        // dont' copy acl!
         return copy;
     }
 
