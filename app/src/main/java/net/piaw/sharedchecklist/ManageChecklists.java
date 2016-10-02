@@ -25,6 +25,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
     ArrayList<Checklist> mChecklists;
     ListView mLV;
     ManageChecklistsAdapter mAdapter;
+    LongClickListener mLongClickListener;
     User mUser;
 
     @Override
@@ -39,14 +40,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
         mUser = Database.getDB().getUser();
         Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) findViewById(R.id.manage_checklists_listview);
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Checklist cl = (Checklist) v.getTag();
-                ViewChecklist(cl);
-                return true;
-            }
-        });
+        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new LongClickListener());
         mLV.setAdapter(mAdapter);
     }
 
@@ -84,7 +78,6 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                                     final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // refresh
-        refreshChecklists();
     }
 
     public void onDataChange(DataSnapshot snapshot) {
@@ -149,10 +142,11 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                     Toast.makeText(this, "you:" + user.getEmail(), Toast.LENGTH_SHORT).show();
                     return true;
                 }
+                mChecklists.remove(cl);
                 user.getChecklists().remove(cl);
                 Database.getDB().UpdateUser();
                 Database.getDB().DeleteChecklist(cl);
-
+                mAdapter.notifyDataSetChanged();
                 return true;
 
             case R.id.checklist_copy:
@@ -212,6 +206,15 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    private class LongClickListener implements View.OnLongClickListener {
+        @Override
+        public boolean onLongClick(View v) {
+            Checklist cl = (Checklist) v.getTag();
+            ViewChecklist(cl);
+            return true;
         }
     }
 }
