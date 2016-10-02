@@ -1,7 +1,12 @@
 package net.piaw.sharedchecklist;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -9,8 +14,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,13 +21,42 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-public class ChecklistDisplay extends AppCompatActivity implements ValueEventListener {
+public class ChecklistDisplay extends AppCompatActivity implements ValueEventListener,
+        Database.SharedChecklistCallback, Database.FetchChecklistCallback {
     public final int DISPLAY_SETTINGS = 0;
     final String Tag = "ChecklistDisplay";
     Checklist mChecklist;
     ListView mLV;
     ChecklistAdapter mAdapter;
     ShareActionProvider mShareActionProvider;
+
+    @Override
+    public void onSharedChecklist(String checklistid) {
+        // fetch checklist
+        Database.getDB().FetchChecklist(this, checklistid);
+    }
+
+    public void onChecklistLoaded(Checklist cl) {
+        if (cl == null) return;
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setAutoCancel(true)
+                        .setSmallIcon(R.drawable.notify)
+                        .setContentTitle("SharedChecklist")
+                        .setContentText(cl.getChecklist_name() + "(" +
+                                Database.unEscapeEmailAddress(cl.getOwner()) + ")" + " shared.");
+        Intent resultIntent = new Intent(this, ViewPendingActivity.class);
+        resultIntent.putExtra("checklist", cl);
+        TaskStackBuilder stackbuilder = TaskStackBuilder.create(this);
+        stackbuilder.addParentStack(ViewPendingActivity.class);
+        stackbuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent = stackbuilder.getPendingIntent(0,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(resultPendingIntent);
+        NotificationManager notification_manager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notification_manager.notify(0, builder.build());
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +73,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         }
 
         mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
-
+        Database.getDB().SharedChecklistNotificationOn(this);
         Database.getDB().getChecklistDB().child(mChecklist.getId())
                 .addValueEventListener(this);
 

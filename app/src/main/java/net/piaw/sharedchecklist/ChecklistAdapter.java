@@ -6,11 +6,10 @@ import android.text.Spannable;
 import android.text.Spanned;
 import android.text.style.StrikethroughSpan;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckedTextView;
@@ -25,42 +24,11 @@ import java.util.ArrayList;
 
 public class ChecklistAdapter extends BaseAdapter {
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
+    public final String Tag = "ChecklistAdapter";
     private Checklist mChecklist;
     private Activity mActivity;
     private Settings mSettings;
     private ArrayList<ChecklistAdapterItem> mShownItems;
-    public final String Tag = "ChecklistAdapter";
-
-    class ChecklistAdapterItem {
-        ChecklistItem item;
-        EditText new_entry;
-        boolean isNewEntry;
-
-        public ChecklistAdapterItem(ChecklistItem item) {
-            this.item = item;
-            isNewEntry = false;
-        }
-
-        public ChecklistAdapterItem(boolean isNewEntry) {
-            this.isNewEntry = isNewEntry;
-        }
-
-        public ChecklistItem getItem() {
-            return item;
-        }
-
-        public boolean isNewEntry() {
-            return isNewEntry;
-        }
-
-        public void setEditText(EditText editText) {
-            this.new_entry = editText;
-        }
-
-        public EditText getEditText() {
-            return this.new_entry;
-        }
-    }
 
     public ChecklistAdapter(Activity activity, Checklist checklist) {
         mSettings = Settings.getInstance(activity);
@@ -90,6 +58,7 @@ public class ChecklistAdapter extends BaseAdapter {
         mShownItems.add(item);
         notifyDataSetChanged();
     }
+
     @Override
     public int getCount() {
         return mShownItems.size();
@@ -131,9 +100,18 @@ public class ChecklistAdapter extends BaseAdapter {
                     item.setLabel(new_checklist_label);
                     item.setCreator(Database.getDB().getEmail());
                     Database.getDB().AddChecklistItem(mChecklist, item);
+                    InputMethodManager imm =
+                            (InputMethodManager) mActivity.getSystemService(
+                                    Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 }
             });
             mShownItems.get(pos).setEditText(new_entry);
+            new_entry.requestFocus();
+            InputMethodManager imm =
+                    (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                    InputMethodManager.HIDE_IMPLICIT_ONLY);
             return view;
         }
         String label = fetchItemAt(pos).getLabel();
@@ -158,6 +136,37 @@ public class ChecklistAdapter extends BaseAdapter {
         Spannable spannable = (Spannable) simpleCheckedTextView.getText();
         spannable.setSpan(STRIKE_THROUGH_SPAN, 0, label.length(),
                 Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    class ChecklistAdapterItem {
+        ChecklistItem item;
+        EditText new_entry;
+        boolean isNewEntry;
+
+        public ChecklistAdapterItem(ChecklistItem item) {
+            this.item = item;
+            isNewEntry = false;
+        }
+
+        public ChecklistAdapterItem(boolean isNewEntry) {
+            this.isNewEntry = isNewEntry;
+        }
+
+        public ChecklistItem getItem() {
+            return item;
+        }
+
+        public boolean isNewEntry() {
+            return isNewEntry;
+        }
+
+        public EditText getEditText() {
+            return this.new_entry;
+        }
+
+        public void setEditText(EditText editText) {
+            this.new_entry = editText;
+        }
     }
 
     class PosBasedOnClickListener implements CheckedTextView.OnClickListener {

@@ -13,6 +13,7 @@ public class Settings {
     private boolean mHideIfChecked = false;
     private boolean mStrikethroughIfChecked = false;
     private SharedPreferences mSharedPref;
+    private boolean mNotifyPendingChecklists = true;
 
     private Settings(Activity activity) {
         mSharedPref = activity.getSharedPreferences("settings", Context.MODE_PRIVATE);
@@ -51,4 +52,11 @@ public class Settings {
         editor.apply();
     }
 
+    public boolean isNotifyPendingChecklists() {
+        return mNotifyPendingChecklists;
+    }
+
+    public void setNotifyPendingChecklists(boolean mNotifyPendingChecklists) {
+        this.mNotifyPendingChecklists = mNotifyPendingChecklists;
+    }
 }

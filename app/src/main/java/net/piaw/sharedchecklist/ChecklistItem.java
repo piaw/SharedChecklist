@@ -28,6 +28,17 @@ public class ChecklistItem implements Serializable {
         deadline = 0L;
     }
 
+    public ChecklistItem DeepCopy() {
+        ChecklistItem copy = new ChecklistItem();
+        copy.checked = this.checked;
+        copy.label = this.label;
+        copy.creator = this.creator;
+        copy.deadline = this.deadline;
+
+        // we don't change dateModified and dateCreated --- copies get new dates
+        return copy;
+    }
+
     public boolean isChecked() {
         return checked;
     }

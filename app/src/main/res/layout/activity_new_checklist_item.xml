@@ -20,6 +20,7 @@
         android:layout_marginTop="38dp"
         android:ems="10"
         android:inputType="text"
+        android:selectAllOnFocus="true"
         android:text="New Checklist Item" />
 
     <Button

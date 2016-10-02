@@ -43,7 +43,7 @@ public class ManageChecklistsAdapter extends BaseAdapter {
     }
 
     public Object getItem(int pos) {
-        return null;
+        return fetchChecklistAt(pos);
     }
 
     public long getItemId(int position) {

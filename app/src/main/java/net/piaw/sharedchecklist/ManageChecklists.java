@@ -25,6 +25,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
     ArrayList<Checklist> mChecklists;
     ListView mLV;
     ManageChecklistsAdapter mAdapter;
+    LongClickListener mLongClickListener;
     User mUser;
 
     @Override
@@ -39,17 +40,14 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
         mUser = Database.getDB().getUser();
         Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) findViewById(R.id.manage_checklists_listview);
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                Checklist cl = (Checklist) v.getTag();
-                Intent intent = new Intent(ManageChecklists.this, ChecklistDisplay.class);
-                intent.putExtra("checklist", cl);
-                startActivity(intent);
-                return true;
-            }
-        });
+        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new LongClickListener());
         mLV.setAdapter(mAdapter);
+    }
+
+    private void ViewChecklist(Checklist cl) {
+        Intent intent = new Intent(this, ChecklistDisplay.class);
+        intent.putExtra("checklist", cl);
+        startActivity(intent);
     }
 
     private void refreshChecklists() {
@@ -80,7 +78,6 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                                     final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // refresh
-        refreshChecklists();
     }
 
     public void onDataChange(DataSnapshot snapshot) {
@@ -108,9 +105,7 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 @Override
                 public boolean onLongClick(View v) {
                     Checklist cl = (Checklist) v.getTag();
-                    Intent intent = new Intent(ManageChecklists.this, ChecklistDisplay.class);
-                    intent.putExtra("checklist", cl);
-                    startActivity(intent);
+                    ViewChecklist(cl);
                     return true;
                 }
             });
@@ -147,14 +142,26 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                     Toast.makeText(this, "you:" + user.getEmail(), Toast.LENGTH_SHORT).show();
                     return true;
                 }
+                mChecklists.remove(cl);
                 user.getChecklists().remove(cl);
                 Database.getDB().UpdateUser();
                 Database.getDB().DeleteChecklist(cl);
-
+                mAdapter.notifyDataSetChanged();
                 return true;
 
             case R.id.checklist_copy:
-                // manage checklists
+                // copy checklist
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                Checklist new_cl = cl.DeepCopy();
+                user = Database.getDB().getUser();
+                new_cl.setCreator(user.getEmail());
+                new_cl.setOwner(user.getEmail());
+                Database.getDB().CreateChecklist(new_cl);
                 return true;
 
             case R.id.checklist_share:
@@ -174,11 +181,40 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 startActivityForResult(intent, REFRESH_REQUIRED);
                 return true;
 
+            case R.id.make_default:
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                user = Database.getDB().getUser();
+                user.setDefault_checklist(cl.getId());
+                Database.getDB().UpdateUser();
+                return true;
+
+            case R.id.open_checklist:
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                ViewChecklist(cl);
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    private class LongClickListener implements View.OnLongClickListener {
+        @Override
+        public boolean onLongClick(View v) {
+            Checklist cl = (Checklist) v.getTag();
+            ViewChecklist(cl);
+            return true;
         }
     }
 }
