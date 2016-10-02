@@ -154,7 +154,18 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
                 return true;
 
             case R.id.checklist_copy:
-                // manage checklists
+                // copy checklist
+                cl = mAdapter.getCurrentSelected();
+                if (cl == null) {
+                    Toast.makeText(this, "No checklist selected!", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+                Checklist new_cl = cl.DeepCopy();
+                user = Database.getDB().getUser();
+                new_cl.setCreator(user.getEmail());
+                new_cl.setOwner(user.getEmail());
+                Database.getDB().CreateChecklist(new_cl);
                 return true;
 
             case R.id.checklist_share:

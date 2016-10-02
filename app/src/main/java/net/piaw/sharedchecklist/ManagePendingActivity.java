@@ -44,6 +44,12 @@ public class ManagePendingActivity extends AppCompatActivity implements Database
             Log.v(Tag, "fetching:" + user.getPending_checklists().get(i));
             Database.getDB().FetchChecklist(this, user.getPending_checklists().get(i));
         }
+        if (user.getPending_checklists().size() == 0) {
+            Checklist cl = new Checklist();
+            cl.setChecklist_name("No pending checklists");
+            mChecklists.add(cl);
+            mAdapter.notifyDataSetChanged();
+        }
     }
 
     public void onDataChange(DataSnapshot snapshot) {

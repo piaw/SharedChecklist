@@ -29,6 +29,22 @@ public class Checklist implements Serializable {
         setAcl(new ArrayList<String>());
     }
 
+    public Checklist DeepCopy() {
+        Checklist copy = new Checklist();
+        copy.id = this.id;
+        copy.creator = this.creator;
+        copy.owner = this.owner;
+        copy.checklist_name = "Copy of " + this.checklist_name;
+        for (int i = 0; i < items.size(); ++i) {
+            ChecklistItem item_copy = items.get(i).DeepCopy();
+            copy.items.add(item_copy);
+        }
+        for (int i = 0; i < acl.size(); ++i) {
+            copy.acl.add(acl.get(i));
+        }
+        return copy;
+    }
+
     public String getId() {
         return id;
     }
