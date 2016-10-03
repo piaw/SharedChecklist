@@ -17,18 +17,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="59dp"
         android:layout_marginEnd="19dp"
-        android:layout_toStartOf="@+id/default_checklist"
         android:text="Save" />
-
-    <Button
-        android:id="@+id/cancel_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/save_settings"
-        android:layout_alignBottom="@+id/save_settings"
-        android:layout_marginStart="29dp"
-        android:layout_toEndOf="@+id/set_default"
-        android:text="Cancel" />
 
     <CheckBox
         android:id="@+id/hide_on_checked"
@@ -48,12 +37,13 @@
         android:layout_centerVertical="true"
         android:text="Strikethrough On Checked" />
 
-    <TextView
-        android:id="@+id/textView"
+    <Button
+        android:id="@+id/cancel_settings"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/default_checklist"
-        android:layout_alignBottom="@+id/default_checklist"
-        android:layout_alignParentStart="true"
-        android:text="Default Checklist" />
+        android:layout_alignBaseline="@+id/save_settings"
+        android:layout_alignBottom="@+id/save_settings"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="26dp"
+        android:text="Cancel" />
 </RelativeLayout>
