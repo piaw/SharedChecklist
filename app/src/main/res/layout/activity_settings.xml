@@ -10,16 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="net.piaw.sharedchecklist.SettingsActivity">
 
-    <EditText
-        android:id="@+id/default_checklist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="29dp"
-        android:ems="10"
-        android:inputType="text" />
-
     <Button
         android:id="@+id/save_settings"
         android:layout_width="wrap_content"
@@ -39,15 +29,6 @@
         android:layout_marginStart="29dp"
         android:layout_toEndOf="@+id/set_default"
         android:text="Cancel" />
-
-    <Button
-        android:id="@+id/set_default"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/default_checklist"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="31dp"
-        android:text="Set Default" />
 
     <CheckBox
         android:id="@+id/hide_on_checked"
