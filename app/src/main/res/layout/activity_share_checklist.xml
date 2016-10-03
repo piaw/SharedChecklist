@@ -43,6 +43,7 @@
             android:layout_marginTop="34dp"
             android:ems="10"
             android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true"
             android:text="user@emailaddress.com" />
 
         <Button

@@ -1,5 +1,6 @@
 package net.piaw.sharedchecklist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,9 +10,13 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.appinvite.AppInviteInvitation;
+
 import java.util.ArrayList;
 
 public class ShareChecklistActivity extends AppCompatActivity {
+    public final static int REQUEST_INVITE = 0;
+
     public String Tag = "ShareChecklistActivity";
     EditText mShareeEmail;
     Button mShareButton;
@@ -52,6 +57,11 @@ public class ShareChecklistActivity extends AppCompatActivity {
             if (user == null) {
                 Toast.makeText(ShareChecklistActivity.this, "No user " + mEmail,
                         Toast.LENGTH_SHORT).show();
+                Intent intent = new AppInviteInvitation.IntentBuilder("Please use ShareChecklist")
+                        .setMessage("I have a checklist to share with you. Please install " +
+                                "the app ShareChecklist so we can share it.")
+                        .build();
+                startActivityForResult(intent, REQUEST_INVITE);
                 return;
             }
 
