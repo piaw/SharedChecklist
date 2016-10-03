@@ -17,6 +17,9 @@ import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -62,6 +65,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checklist_display);
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
         Toolbar checklistToolbar = (Toolbar) findViewById(R.id.checklist_toolbar);
         setSupportActionBar(checklistToolbar);
         mLV = (ListView) findViewById(R.id.checklistview);
@@ -77,6 +81,9 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         Database.getDB().getChecklistDB().child(mChecklist.getId())
                 .addValueEventListener(this);
 
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     @Override
