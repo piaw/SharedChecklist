@@ -1,7 +1,6 @@
 package net.piaw.sharedchecklist;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +17,20 @@ public class ManageChecklistsAdapter extends BaseAdapter {
     public final String Tag = "ManageCLAdapter";
     Activity mActivity;
     ArrayList<Checklist> mChecklists;
-    Checklist mCurrentSelected;
     View.OnLongClickListener longClickListener;
+    View.OnClickListener clickListener;
 
     ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists,
+                            View.OnClickListener clicklistener,
                             View.OnLongClickListener longClickListener) {
         mActivity = activity;
         mChecklists = checklists;
-        mCurrentSelected = null;
         this.longClickListener = longClickListener;
+        this.clickListener = clicklistener;
+    }
+
+    public Checklist getCurrentSelected() {
+        return null;
     }
 
     @Override
@@ -36,10 +40,6 @@ public class ManageChecklistsAdapter extends BaseAdapter {
 
     private Checklist fetchChecklistAt(int i) {
         return mChecklists.get(i);
-    }
-
-    public Checklist getCurrentSelected() {
-        return mCurrentSelected;
     }
 
     public Object getItem(int pos) {
@@ -62,21 +62,9 @@ public class ManageChecklistsAdapter extends BaseAdapter {
         cl_name.setText(cl.getChecklist_name());
         cl_owner.setText(Database.unEscapeEmailAddress(cl.getOwner()));
         cl_num_entries.setText(Integer.toString(cl.getItems().size()));
-        if (mCurrentSelected == cl) {
-            view.setBackgroundColor(Color.YELLOW);
-        } else {
-            view.setBackgroundColor(Color.WHITE);
-        }
         view.setTag(cl);
         view.setLongClickable(true);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.setSelected(true);
-                mCurrentSelected = (Checklist) v.getTag();
-                ManageChecklistsAdapter.this.notifyDataSetChanged();
-            }
-        });
+        view.setOnClickListener(clickListener);
         view.setOnLongClickListener(longClickListener);
         return view;
     }

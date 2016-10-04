@@ -1,5 +1,7 @@
 package net.piaw.sharedchecklist;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -40,7 +42,8 @@ public class ChecklistDrawerActivity extends AppCompatActivity
             synchronized (mChecklists) {
                 mChecklists.add(cl);
             }
-            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new LongClickListener());
+            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new ClickListener(),
+                    new LongClickListener());
             mLV.setAdapter(mAdapter);
         }
     }
@@ -94,7 +97,8 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) navigationView.findViewById(R.id.manage_checklist_lv);
         mLV.setBackgroundColor(Color.parseColor("#81C784"));
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new LongClickListener());
+        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new ClickListener(),
+                new LongClickListener());
         mLV.setAdapter(mAdapter);
         TextView email = (TextView) findViewById(R.id.userid);
         email.setText(Database.unEscapeEmailAddress(mUser.getEmail()));
@@ -155,6 +159,24 @@ public class ChecklistDrawerActivity extends AppCompatActivity
             Checklist cl = (Checklist) v.getTag();
             ViewChecklist(cl);
             return true;
+        }
+    }
+
+    private class ClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Checklist cl = (Checklist) v.getTag();
+            Fragment fragment = new ChecklistDisplay();
+            Bundle args = new Bundle();
+            args.putSerializable("checklist", cl);
+            fragment.setArguments(args);
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_view, fragment)
+                    .commit();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
         }
     }
 }

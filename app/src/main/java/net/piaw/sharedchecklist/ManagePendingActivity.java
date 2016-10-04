@@ -30,7 +30,12 @@ public class ManagePendingActivity extends AppCompatActivity implements Database
         mChecklists = new ArrayList<>();
         mUser = Database.getDB().getUser();
         mLV = (ListView) findViewById(R.id.pending_view);
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new StartViewPendingActivity());
+        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        }, new StartViewPendingActivity());
         mLV.setAdapter(mAdapter);
         refreshChecklists();
     }
@@ -73,8 +78,12 @@ public class ManagePendingActivity extends AppCompatActivity implements Database
             synchronized (mChecklists) {
                 mChecklists.add(cl);
             }
-            mAdapter = new ManageChecklistsAdapter(this, mChecklists,
-                    new StartViewPendingActivity());
+            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            }, new StartViewPendingActivity());
             mLV.setAdapter(mAdapter);
         }
     }

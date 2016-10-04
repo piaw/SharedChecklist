@@ -1,5 +1,6 @@
 package net.piaw.sharedchecklist;
 
+import android.app.Fragment;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -11,9 +12,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,7 +28,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
-public class ChecklistDisplay extends AppCompatActivity implements ValueEventListener,
+public class ChecklistDisplay extends Fragment implements ValueEventListener,
         Database.SharedChecklistCallback, Database.FetchChecklistCallback {
     public final int DISPLAY_SETTINGS = 0;
     final String Tag = "ChecklistDisplay";
@@ -32,6 +36,9 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     ListView mLV;
     ChecklistAdapter mAdapter;
     ShareActionProvider mShareActionProvider;
+
+    public ChecklistDisplay() {
+    }
 
     @Override
     public void onSharedChecklist(String checklistid) {
@@ -42,46 +49,52 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     public void onChecklistLoaded(Checklist cl) {
         if (cl == null) return;
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(this)
+                new NotificationCompat.Builder(getActivity())
                         .setAutoCancel(true)
                         .setSmallIcon(R.drawable.notify)
                         .setContentTitle("SharedChecklist")
                         .setContentText(cl.getChecklist_name() + "(" +
                                 Database.unEscapeEmailAddress(cl.getOwner()) + ")" + " shared.");
-        Intent resultIntent = new Intent(this, ViewPendingActivity.class);
+        Intent resultIntent = new Intent(getActivity(), ViewPendingActivity.class);
         resultIntent.putExtra("checklist", cl);
-        TaskStackBuilder stackbuilder = TaskStackBuilder.create(this);
+        TaskStackBuilder stackbuilder = TaskStackBuilder.create(getActivity());
         stackbuilder.addParentStack(ViewPendingActivity.class);
         stackbuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackbuilder.getPendingIntent(0,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(resultPendingIntent);
         NotificationManager notification_manager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         notification_manager.notify(0, builder.build());
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checklist_display);
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1224037948533601~70643373923");
-        Toolbar checklistToolbar = (Toolbar) findViewById(R.id.checklist_toolbar);
-        setSupportActionBar(checklistToolbar);
-        mLV = (ListView) findViewById(R.id.checklistview);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_checklist_display, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        MobileAds.initialize(getActivity().getApplicationContext(),
+                "ca-app-pub-1224037948533601~70643373923");
+        Toolbar checklistToolbar = (Toolbar) getActivity().findViewById(R.id.checklist_toolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(checklistToolbar);
+        mChecklist = (Checklist) getArguments().getSerializable("checklist");
+        mLV = (ListView) getActivity().findViewById(R.id.checklistview);
         mLV.setItemsCanFocus(true);
-        mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
-        getSupportActionBar().setTitle("Checklist:" + mChecklist.getChecklist_name());
+        checklistToolbar.setTitle(mChecklist.getChecklist_name());
         if (BuildConfig.DEBUG && mChecklist == null) {
             throw new RuntimeException("ASSERTION FAILED: mChecklist is NULL!");
         }
 
-        mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
+        mLV.setAdapter(mAdapter = new ChecklistAdapter(getActivity(), mChecklist));
         Database.getDB().SharedChecklistNotificationOn(this);
         Database.getDB().getChecklistDB().child(mChecklist.getId())
                 .addValueEventListener(this);
 
-        AdView mAdView = (AdView) findViewById(R.id.adView);
+        AdView mAdView = (AdView) getActivity().findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
@@ -91,30 +104,29 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         Log.v(Tag, "onDataChange!");
         mChecklist = snapshot.getValue(Checklist.class);
         Log.v(Tag, "setting adapter!");
-        mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
+        mLV.setAdapter(mAdapter = new ChecklistAdapter(getActivity(), mChecklist));
     }
 
     public void onCancelled(DatabaseError dberr) {
         Log.v(Tag, "onCancelled");
-        Toast.makeText(this, "Database error!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Database error!", Toast.LENGTH_SHORT).show();
     }
 
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
+        MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.menu_checklist_display, menu);
         if (mChecklist.getId().equals("")) {
             Log.e(Tag, "checklist id is null!");
-            Toast.makeText(this, "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
             return false;
         }
         return true;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // might as well refresh everything
-        mLV.setAdapter(mAdapter = new ChecklistAdapter(this, mChecklist));
+        mLV.setAdapter(mAdapter = new ChecklistAdapter(getActivity(), mChecklist));
     }
 
     @Override
@@ -122,7 +134,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
         switch (item.getItemId()) {
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
-                Intent intent = new Intent(this, SettingsActivity.class);
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
                 intent.putExtra("checklist", mChecklist);
                 startActivityForResult(intent, DISPLAY_SETTINGS);
                 return true;
@@ -134,7 +146,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
 
             case R.id.action_manage:
                 // manage checklists
-                intent = new Intent(this, ManageChecklists.class);
+                intent = new Intent(getActivity(), ManageChecklists.class);
                 startActivity(intent);
                 return true;
 

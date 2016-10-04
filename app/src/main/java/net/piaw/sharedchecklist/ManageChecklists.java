@@ -40,7 +40,12 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
         mUser = Database.getDB().getUser();
         Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) findViewById(R.id.manage_checklists_listview);
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new LongClickListener());
+        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        }, new LongClickListener());
         mLV.setAdapter(mAdapter);
     }
 
@@ -101,7 +106,12 @@ public class ManageChecklists extends AppCompatActivity implements Database.Fetc
             synchronized (mChecklists) {
                 mChecklists.add(cl);
             }
-            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnLongClickListener() {
+            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            }, new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     Checklist cl = (Checklist) v.getTag();
