@@ -79,7 +79,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
         super.onActivityCreated(savedInstanceState);
         MobileAds.initialize(getActivity().getApplicationContext(),
                 "ca-app-pub-1224037948533601~70643373923");
-        Toolbar checklistToolbar = (Toolbar) getActivity().findViewById(R.id.checklist_toolbar);
+        Toolbar checklistToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(checklistToolbar);
         mChecklist = (Checklist) getArguments().getSerializable("checklist");
         mLV = (ListView) getActivity().findViewById(R.id.checklistview);
