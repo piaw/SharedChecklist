@@ -29,6 +29,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         ValueEventListener, Database.FetchChecklistCallback {
     public final String Tag = "ChecklistDrawerActivity";
+    public final int DISPLAY_SETTINGS = 0;
     ArrayList<Checklist> mChecklists;
     User mUser;
     ListView mLV;
@@ -102,6 +103,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         mLV.setAdapter(mAdapter);
         TextView email = (TextView) findViewById(R.id.userid);
         email.setText(Database.unEscapeEmailAddress(mUser.getEmail()));
+        drawer.openDrawer(GravityCompat.START);
     }
 
     @Override
@@ -128,8 +130,16 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.openDrawer(GravityCompat.START);
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            // User chose the "Settings" item, show the app settings UI...
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, DISPLAY_SETTINGS);
             return true;
         }
 

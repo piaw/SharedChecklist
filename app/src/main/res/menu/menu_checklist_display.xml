@@ -8,12 +8,8 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_settings"
-        android:title="Settings"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_manage"
-        android:title="Manage Checklists"
-        app:showAsAction="never" />
+        android:id="@+id/action_delete"
+        android:icon="@drawable/delete"
+        app:showAsAction="ifRoom" />
 
 </menu>

@@ -1,13 +1,17 @@
 package net.piaw.sharedchecklist;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
@@ -71,6 +75,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
         return inflater.inflate(R.layout.activity_checklist_display, container, false);
     }
 
@@ -103,6 +108,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     public void onDataChange(DataSnapshot snapshot) {
         Log.v(Tag, "onDataChange!");
         mChecklist = snapshot.getValue(Checklist.class);
+        if (mChecklist == null) return; // checklist was deleted!
         Log.v(Tag, "setting adapter!");
         mLV.setAdapter(mAdapter = new ChecklistAdapter(getActivity(), mChecklist));
     }
@@ -112,15 +118,13 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
         Toast.makeText(getActivity(), "Database error!", Toast.LENGTH_SHORT).show();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getActivity().getMenuInflater();
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_checklist_display, menu);
         if (mChecklist.getId().equals("")) {
             Log.e(Tag, "checklist id is null!");
             Toast.makeText(getActivity(), "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
-            return false;
         }
-        return true;
     }
 
     @Override
@@ -132,22 +136,15 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                // User chose the "Settings" item, show the app settings UI...
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                intent.putExtra("checklist", mChecklist);
-                startActivityForResult(intent, DISPLAY_SETTINGS);
-                return true;
+
 
             case R.id.action_add:
                 // Add a new checklist
                 mAdapter.addNewChecklistItem();
                 return true;
 
-            case R.id.action_manage:
-                // manage checklists
-                intent = new Intent(getActivity(), ManageChecklists.class);
-                startActivity(intent);
+            case R.id.action_delete:
+                new DeleteChecklistDialogFragment().show(getFragmentManager(), "Confirm");
                 return true;
 
             default:
@@ -155,6 +152,38 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    public class DeleteChecklistDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Delete entire checklist?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            User user = Database.getDB().getUser();
+                            if (!mChecklist.getOwner().equals(user.getEmail())) {
+                                Toast.makeText(getActivity(), "Not owner. Cannot delete."
+                                                + mChecklist.getOwner(),
+                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getActivity(), "you:" + user.getEmail(),
+                                        Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            user.getChecklists().remove(mChecklist);
+                            Database.getDB().UpdateUser();
+                            Database.getDB().DeleteChecklist(mChecklist);
+                            getActivity().finish();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 }
