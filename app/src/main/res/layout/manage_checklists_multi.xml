@@ -8,8 +8,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="#81C784"
         android:minHeight="?android:attr/listPreferredItemHeight"
-        android:textSize="8pt"
+        android:textSize="6pt"
         android:textStyle="bold" />
 
     <TextView
@@ -17,8 +18,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:background="#81C784"
         android:minHeight="?android:attr/listPreferredItemHeight"
-        android:textSize="8pt"
+        android:textSize="6pt"
         android:textStyle="normal" />
 
     <TextView
@@ -26,9 +28,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
+        android:background="#81C784"
         android:minHeight="?android:attr/listPreferredItemHeight"
         android:textAlignment="viewEnd"
-        android:textSize="8pt"
+        android:textSize="6pt"
         android:textStyle="normal" />
 
 </LinearLayout>

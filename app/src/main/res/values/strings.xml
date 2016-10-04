@@ -3,8 +3,12 @@
     <string name="action_settings">Settings</string>
     <string name="facebook_app_id">207005323051208</string>
     <string name="fb_login_protocol_scheme">fb207005323051208</string>
-    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="banner_ad_unit_id">ca-app-pub-1224037948533601/8541070598</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_checklist_drawer">ChecklistDrawerActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

@@ -156,8 +156,7 @@ public class Database {
         if (!mShowOnFetch) return;
         Log.d(Tag, "Showing checklist:" + checklist.getId());
         Intent intent = new Intent(getApplicationContext(),
-                ChecklistDisplay.class);
-        intent.putExtra("checklist", checklist);
+                ChecklistDrawerActivity.class);
         mActivity.startActivity(intent);
     }
 

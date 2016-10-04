@@ -14,7 +14,6 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-
         <activity
             android:name=".FacebookLoginActivity"
             android:label="SharedChecklist">
@@ -54,10 +53,13 @@
         </activity>
         <activity android:name=".NewChecklistActivity" />
         <activity android:name=".ShareChecklistActivity" />
-        <activity android:name=".ManagePendingActivity">
-
+        <activity android:name=".ManagePendingActivity"></activity>
+        <activity android:name=".ViewPendingActivity" />
+        <activity
+            android:name=".ChecklistDrawerActivity"
+            android:label="@string/title_activity_checklist_drawer"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
-        <activity android:name=".ViewPendingActivity"></activity>
     </application>
 
 </manifest>

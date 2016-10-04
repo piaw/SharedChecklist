@@ -65,7 +65,7 @@ public class ChecklistDisplay extends AppCompatActivity implements ValueEventLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_checklist_display);
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-3940256099942544~3347511713");
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1224037948533601~70643373923");
         Toolbar checklistToolbar = (Toolbar) findViewById(R.id.checklist_toolbar);
         setSupportActionBar(checklistToolbar);
         mLV = (ListView) findViewById(R.id.checklistview);
