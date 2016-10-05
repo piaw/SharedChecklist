@@ -52,7 +52,7 @@ public class ManagePendingActivity extends Fragment implements Database.FetchChe
                 // long clicks don't do anything
                 return true;
             }
-                });
+                      });
         mLV.setAdapter(mAdapter);
         refreshChecklists();
     }
