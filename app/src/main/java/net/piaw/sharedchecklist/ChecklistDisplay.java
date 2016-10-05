@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
@@ -143,6 +145,10 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                 mAdapter.addNewChecklistItem();
                 return true;
 
+            case R.id.action_copy:
+                new CopyChecklistDialogFragment().show(getFragmentManager(), "Confirm");
+                return true;
+
             case R.id.action_delete:
                 new DeleteChecklistDialogFragment().show(getFragmentManager(), "Confirm");
                 return true;
@@ -152,6 +158,32 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
 
+        }
+    }
+
+    public class CopyChecklistDialogFragment extends DialogFragment {
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setMessage("Copy Checklist?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            Checklist copy = mChecklist.DeepCopy();
+                            String email = Database.getDB().getEmail();
+                            copy.setOwner(email);
+                            copy.setCreator(email);
+                            copy = Database.getDB().CreateChecklist(copy);
+                            DrawerLayout drawer =
+                                    (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+                            drawer.openDrawer(GravityCompat.START);
+
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
         }
     }
 
@@ -172,10 +204,15 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                                         Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            user.getChecklists().remove(mChecklist);
+                            user.getChecklists().remove(mChecklist.getId());
                             Database.getDB().UpdateUser();
                             Database.getDB().DeleteChecklist(mChecklist);
-                            getActivity().finish();
+                            DrawerLayout drawer =
+                                    (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+                            drawer.openDrawer(GravityCompat.START);
+                            getActivity().getFragmentManager().beginTransaction()
+                                    .remove(ChecklistDisplay.this).commit();
+
                         }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
