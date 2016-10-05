@@ -34,6 +34,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
     User mUser;
     ListView mLV;
     ManageChecklistsAdapter mAdapter;
+    SetupPendingChangelists mPendingChangelists;
 
     @Override
     public void onChecklistLoaded(Checklist cl) {
@@ -46,6 +47,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
             mAdapter = new ManageChecklistsAdapter(this, mChecklists, new ClickListener(),
                     new LongClickListener());
             mLV.setAdapter(mAdapter);
+            mAdapter.addMenuItem("View Pending", mPendingChangelists);
         }
     }
 
@@ -71,6 +73,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         mUser = snapshot.getValue(User.class);
         Log.v(Tag, "setting adapter!");
         refreshChecklists();
+        ;
         mAdapter.notifyDataSetChanged();
     }
 
@@ -85,6 +88,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         setContentView(R.layout.activity_checklist_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mPendingChangelists = new SetupPendingChangelists();
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -101,6 +105,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         mAdapter = new ManageChecklistsAdapter(this, mChecklists, new ClickListener(),
                 new LongClickListener());
         mLV.setAdapter(mAdapter);
+        mAdapter.addMenuItem("View Pending", mPendingChangelists);
         TextView email = (TextView) findViewById(R.id.userid);
         email.setText(Database.unEscapeEmailAddress(mUser.getEmail()));
         drawer.openDrawer(GravityCompat.START);
@@ -180,6 +185,20 @@ public class ChecklistDrawerActivity extends AppCompatActivity
             Bundle args = new Bundle();
             args.putSerializable("checklist", cl);
             fragment.setArguments(args);
+
+            FragmentManager fragmentManager = getFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_view, fragment)
+                    .commit();
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            drawer.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private class SetupPendingChangelists implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            Fragment fragment = new ManagePendingActivity();
 
             FragmentManager fragmentManager = getFragmentManager();
             fragmentManager.beginTransaction()

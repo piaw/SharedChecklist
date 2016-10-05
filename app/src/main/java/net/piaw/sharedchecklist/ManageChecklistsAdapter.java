@@ -16,15 +16,60 @@ import java.util.ArrayList;
 public class ManageChecklistsAdapter extends BaseAdapter {
     public final String Tag = "ManageCLAdapter";
     Activity mActivity;
+    ArrayList<ManageChecklistItem> mChecklistItems;
     ArrayList<Checklist> mChecklists;
     View.OnLongClickListener longClickListener;
     View.OnClickListener clickListener;
+
+    class ManageChecklistItem {
+        boolean isMenu;
+        String menuString;
+        View.OnClickListener menuListener;
+        Checklist cl;
+
+        ManageChecklistItem(Checklist cl) {
+            isMenu = false;
+            this.cl = cl;
+        }
+
+        ManageChecklistItem(String menuString, View.OnClickListener listener) {
+            isMenu = true;
+            this.menuString = menuString;
+            menuListener = listener;
+        }
+
+        Checklist getChecklist() {
+            return cl;
+        }
+
+        String getMenuString() {
+            return menuString;
+        }
+
+        View.OnClickListener getMenuListener() {
+            return menuListener;
+        }
+    }
+
+    public void addMenuItem(String menuItem, View.OnClickListener listener) {
+        ManageChecklistItem new_item = new ManageChecklistItem(menuItem, listener);
+
+        // don't add if already exists
+        if (!mChecklistItems.contains(new_item)) {
+            mChecklistItems.add(new ManageChecklistItem(menuItem, listener));
+            notifyDataSetChanged();
+        }
+    }
 
     ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists,
                             View.OnClickListener clicklistener,
                             View.OnLongClickListener longClickListener) {
         mActivity = activity;
+        mChecklistItems = new ArrayList<>();
         mChecklists = checklists;
+        for (int i = 0; i < mChecklists.size(); ++i) {
+            mChecklistItems.add(new ManageChecklistItem(mChecklists.get(i)));
+        }
         this.longClickListener = longClickListener;
         this.clickListener = clicklistener;
     }
@@ -35,15 +80,15 @@ public class ManageChecklistsAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return mChecklists.size();
+        return mChecklistItems.size();
     }
 
-    private Checklist fetchChecklistAt(int i) {
-        return mChecklists.get(i);
+    private ManageChecklistItem fetchItemAt(int i) {
+        return mChecklistItems.get(i);
     }
 
     public Object getItem(int pos) {
-        return fetchChecklistAt(pos);
+        return fetchItemAt(pos);
     }
 
     public long getItemId(int position) {
@@ -52,13 +97,21 @@ public class ManageChecklistsAdapter extends BaseAdapter {
 
     public View getView(int pos, View view, final ViewGroup parent) {
         Log.v(Tag, "getView:" + pos);
-        if (view == null) {
-            view = mActivity.getLayoutInflater().inflate(R.layout.manage_checklists_multi, null);
+        ManageChecklistItem item = fetchItemAt(pos);
+        if (item.isMenu) {
+            view = mActivity.getLayoutInflater().inflate(R.layout.checklist_menu_item, null);
+            TextView tv = (TextView) view.findViewById(R.id.checklist_menu_item);
+            tv.setText(item.getMenuString());
+            view.setOnClickListener(item.getMenuListener());
+            return view;
         }
+
+        // else
+        view = mActivity.getLayoutInflater().inflate(R.layout.manage_checklists_multi, null);
+        Checklist cl = item.getChecklist();
         TextView cl_name = (TextView) view.findViewById(R.id.cl_name);
         TextView cl_owner = (TextView) view.findViewById(R.id.cl_owner);
         TextView cl_num_entries = (TextView) view.findViewById(R.id.cl_num_entries);
-        Checklist cl = fetchChecklistAt(pos);
         cl_name.setText(cl.getChecklist_name());
         cl_owner.setText(Database.unEscapeEmailAddress(cl.getOwner()));
         cl_num_entries.setText(Integer.toString(cl.getItems().size()));

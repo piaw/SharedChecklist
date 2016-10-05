@@ -2,9 +2,12 @@ package net.piaw.sharedchecklist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -14,7 +17,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class ManagePendingActivity extends AppCompatActivity implements Database.FetchChecklistCallback,
+public class ManagePendingActivity extends Fragment implements Database.FetchChecklistCallback,
         ValueEventListener {
     public static final String Tag = "ManagePendingActivity";
     public static final int ACCEPT_OR_REJECT = 0;
@@ -23,19 +26,33 @@ public class ManagePendingActivity extends AppCompatActivity implements Database
     ManageChecklistsAdapter mAdapter;
     User mUser;
 
+    public ManagePendingActivity() {
+        // empty
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_pending);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+        return inflater.inflate(R.layout.activity_checklist_display, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getActivity().setContentView(R.layout.activity_manage_pending);
         mChecklists = new ArrayList<>();
         mUser = Database.getDB().getUser();
-        mLV = (ListView) findViewById(R.id.pending_view);
-        mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnClickListener() {
+        mLV = (ListView) getActivity().findViewById(R.id.pending_view);
+        mAdapter = new ManageChecklistsAdapter(getActivity(), mChecklists,
+                new StartViewPendingActivity(),
+                new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
-
+            public boolean onLongClick(View v) {
+                // long clicks don't do anything
+                return true;
             }
-        }, new StartViewPendingActivity());
+                });
         mLV.setAdapter(mAdapter);
         refreshChecklists();
     }
@@ -67,7 +84,7 @@ public class ManagePendingActivity extends AppCompatActivity implements Database
 
     public void onCancelled(DatabaseError dberr) {
         Log.v(Tag, "onCancelled");
-        Toast.makeText(this, "Database error!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Database error!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -78,31 +95,33 @@ public class ManagePendingActivity extends AppCompatActivity implements Database
             synchronized (mChecklists) {
                 mChecklists.add(cl);
             }
-            mAdapter = new ManageChecklistsAdapter(this, mChecklists, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                }
-            }, new StartViewPendingActivity());
+            mAdapter = new ManageChecklistsAdapter(getActivity(), mChecklists,
+                    new StartViewPendingActivity(),
+                    new View.OnLongClickListener() {
+                        @Override
+                        public boolean onLongClick(View v) {
+                            // long clicks don't do anything
+                            return true;
+                        }
+                    });
             mLV.setAdapter(mAdapter);
         }
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode,
-                                    final Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode,
+                                 final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // refresh
         refreshChecklists();
     }
 
-    class StartViewPendingActivity implements View.OnLongClickListener {
-        public boolean onLongClick(View v) {
+    class StartViewPendingActivity implements View.OnClickListener {
+        public void onClick(View v) {
             Checklist cl = (Checklist) v.getTag();
-            Intent intent = new Intent(ManagePendingActivity.this, ViewPendingActivity.class);
+            Intent intent = new Intent(getActivity(), ViewPendingActivity.class);
             intent.putExtra("checklist", cl);
             startActivityForResult(intent, ACCEPT_OR_REJECT);
-            return true;
         }
     }
 }
