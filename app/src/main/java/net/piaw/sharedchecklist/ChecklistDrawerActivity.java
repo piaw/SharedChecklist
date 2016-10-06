@@ -46,7 +46,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
                 mChecklists.add(cl);
             }
             mAdapter = new ManageChecklistsAdapter(this, mChecklists, new ClickListener(),
-                    new LongClickListener());
+                    new LongClickListener(), Color.parseColor("#81C784"));
             mLV.setAdapter(mAdapter);
             mAdapter.addMenuItem("View Pending", mPendingChecklists);
         }
@@ -104,7 +104,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         mLV = (ListView) navigationView.findViewById(R.id.manage_checklist_lv);
         mLV.setBackgroundColor(Color.parseColor("#81C784"));
         mAdapter = new ManageChecklistsAdapter(this, mChecklists, new ClickListener(),
-                new LongClickListener());
+                new LongClickListener(), Color.parseColor("#81C784"));
         mLV.setAdapter(mAdapter);
         mAdapter.addMenuItem("View Shared Checklists", mPendingChecklists);
         TextView email = (TextView) findViewById(R.id.userid);

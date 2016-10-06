@@ -1,6 +1,7 @@
 package net.piaw.sharedchecklist;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,35 +21,27 @@ public class ManageChecklistsAdapter extends BaseAdapter {
     ArrayList<Checklist> mChecklists;
     View.OnLongClickListener longClickListener;
     View.OnClickListener clickListener;
+    int mBGColor;
 
-    class ManageChecklistItem {
-        boolean isMenu;
-        String menuString;
-        View.OnClickListener menuListener;
-        Checklist cl;
-
-        ManageChecklistItem(Checklist cl) {
-            isMenu = false;
-            this.cl = cl;
+    ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists,
+                            View.OnClickListener clicklistener,
+                            View.OnLongClickListener longClickListener,
+                            int bgColor) {
+        mActivity = activity;
+        mChecklistItems = new ArrayList<>();
+        mChecklists = checklists;
+        mBGColor = bgColor;
+        for (int i = 0; i < mChecklists.size(); ++i) {
+            mChecklistItems.add(new ManageChecklistItem(mChecklists.get(i)));
         }
+        this.longClickListener = longClickListener;
+        this.clickListener = clicklistener;
+    }
 
-        ManageChecklistItem(String menuString, View.OnClickListener listener) {
-            isMenu = true;
-            this.menuString = menuString;
-            menuListener = listener;
-        }
-
-        Checklist getChecklist() {
-            return cl;
-        }
-
-        String getMenuString() {
-            return menuString;
-        }
-
-        View.OnClickListener getMenuListener() {
-            return menuListener;
-        }
+    ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists,
+                            View.OnClickListener clicklistener,
+                            View.OnLongClickListener longClickListener) {
+        this(activity, checklists, clicklistener, longClickListener, Color.WHITE);
     }
 
     public void addMenuItem(String menuItem, View.OnClickListener listener) {
@@ -59,19 +52,6 @@ public class ManageChecklistsAdapter extends BaseAdapter {
             mChecklistItems.add(new ManageChecklistItem(menuItem, listener));
             notifyDataSetChanged();
         }
-    }
-
-    ManageChecklistsAdapter(Activity activity, ArrayList<Checklist> checklists,
-                            View.OnClickListener clicklistener,
-                            View.OnLongClickListener longClickListener) {
-        mActivity = activity;
-        mChecklistItems = new ArrayList<>();
-        mChecklists = checklists;
-        for (int i = 0; i < mChecklists.size(); ++i) {
-            mChecklistItems.add(new ManageChecklistItem(mChecklists.get(i)));
-        }
-        this.longClickListener = longClickListener;
-        this.clickListener = clicklistener;
     }
 
     public Checklist getCurrentSelected() {
@@ -102,6 +82,7 @@ public class ManageChecklistsAdapter extends BaseAdapter {
             view = mActivity.getLayoutInflater().inflate(R.layout.checklist_menu_item, null);
             TextView tv = (TextView) view.findViewById(R.id.checklist_menu_item);
             tv.setText(item.getMenuString());
+            view.setBackgroundColor(mBGColor);
             view.setOnClickListener(item.getMenuListener());
             return view;
         }
@@ -119,6 +100,37 @@ public class ManageChecklistsAdapter extends BaseAdapter {
         view.setLongClickable(true);
         view.setOnClickListener(clickListener);
         view.setOnLongClickListener(longClickListener);
+        view.setBackgroundColor(mBGColor);
         return view;
+    }
+
+    class ManageChecklistItem {
+        boolean isMenu;
+        String menuString;
+        View.OnClickListener menuListener;
+        Checklist cl;
+
+        ManageChecklistItem(Checklist cl) {
+            isMenu = false;
+            this.cl = cl;
+        }
+
+        ManageChecklistItem(String menuString, View.OnClickListener listener) {
+            isMenu = true;
+            this.menuString = menuString;
+            menuListener = listener;
+        }
+
+        Checklist getChecklist() {
+            return cl;
+        }
+
+        String getMenuString() {
+            return menuString;
+        }
+
+        View.OnClickListener getMenuListener() {
+            return menuListener;
+        }
     }
 }
