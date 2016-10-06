@@ -1,9 +1,8 @@
 package net.piaw.sharedchecklist;
 
+import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -33,17 +34,16 @@ public class ManagePendingActivity extends Fragment implements Database.FetchChe
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        setHasOptionsMenu(true);
-        return inflater.inflate(R.layout.activity_checklist_display, container, false);
+        return inflater.inflate(R.layout.activity_manage_pending, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getActivity().setContentView(R.layout.activity_manage_pending);
+        getActivity().setTitle("Manage Shared Checklists");
         mChecklists = new ArrayList<>();
         mUser = Database.getDB().getUser();
-        mLV = (ListView) getActivity().findViewById(R.id.pending_view);
+        mLV = (ListView) getView().findViewById(R.id.pending_view);
         mAdapter = new ManageChecklistsAdapter(getActivity(), mChecklists,
                 new StartViewPendingActivity(),
                 new View.OnLongClickListener() {
@@ -55,24 +55,31 @@ public class ManagePendingActivity extends Fragment implements Database.FetchChe
                       });
         mLV.setAdapter(mAdapter);
         refreshChecklists();
+        AdView mAdView = (AdView) getView().findViewById(R.id.adView2);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
     }
 
     private void refreshChecklists() {
         mChecklists = new ArrayList<>();
         // fetch all checklists
         User user = Database.getDB().getUser();
-        Log.v(Tag, "getting checklists for user:" + user.getEmail());
-        for (int i = 0; i < user.getPending_checklists().size(); ++i) {
-            Log.v(Tag, "fetching:" + user.getPending_checklists().get(i));
-            Database.getDB().FetchChecklist(this, user.getPending_checklists().get(i));
-        }
+
         if (user.getPending_checklists().size() == 0) {
             Checklist cl = new Checklist();
             cl.setChecklist_name("No pending checklists");
             mChecklists.add(cl);
             mAdapter.notifyDataSetChanged();
+            return;
+        }
+
+        Log.v(Tag, "getting checklists for user:" + user.getEmail());
+        for (int i = 0; i < user.getPending_checklists().size(); ++i) {
+            Log.v(Tag, "fetching:" + user.getPending_checklists().get(i));
+            Database.getDB().FetchChecklist(this, user.getPending_checklists().get(i));
         }
     }
+
 
     public void onDataChange(DataSnapshot snapshot) {
         Log.v(Tag, "onDataChange!");

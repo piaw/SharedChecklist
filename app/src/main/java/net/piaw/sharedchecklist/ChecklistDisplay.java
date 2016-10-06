@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
@@ -84,8 +83,6 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        MobileAds.initialize(getActivity().getApplicationContext(),
-                "ca-app-pub-1224037948533601~70643373923");
         Toolbar checklistToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(checklistToolbar);
         mChecklist = (Checklist) getArguments().getSerializable("checklist");
