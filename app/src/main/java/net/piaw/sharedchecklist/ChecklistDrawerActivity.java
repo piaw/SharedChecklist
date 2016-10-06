@@ -1,7 +1,10 @@
 package net.piaw.sharedchecklist;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,12 +12,15 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +42,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
     ListView mLV;
     ManageChecklistsAdapter mAdapter;
     SetupPendingChecklists mPendingChecklists;
+    NewChecklist mNewChecklist;
 
     @Override
     public void onChecklistLoaded(Checklist cl) {
@@ -49,6 +56,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
                     new LongClickListener(), Color.parseColor("#81C784"));
             mLV.setAdapter(mAdapter);
             mAdapter.addMenuItem("View Pending", mPendingChecklists);
+            mAdapter.addMenuItem("New Checklist", mNewChecklist);
         }
     }
 
@@ -89,6 +97,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mPendingChecklists = new SetupPendingChecklists();
+        mNewChecklist = new NewChecklist();
         MobileAds.initialize(getApplicationContext(),
                 "ca-app-pub-1224037948533601~70643373923");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -107,6 +116,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
                 new LongClickListener(), Color.parseColor("#81C784"));
         mLV.setAdapter(mAdapter);
         mAdapter.addMenuItem("View Shared Checklists", mPendingChecklists);
+        mAdapter.addMenuItem("New Checklist", mNewChecklist);
         TextView email = (TextView) findViewById(R.id.userid);
         email.setText(Database.unEscapeEmailAddress(mUser.getEmail()));
         drawer.openDrawer(GravityCompat.START);
@@ -169,6 +179,37 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         return true;
     }
 
+    private class NewChecklistDialog extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(ChecklistDrawerActivity.this);
+            LayoutInflater inflater = getLayoutInflater();
+            final View dialogview = inflater.inflate(R.layout.activity_new_checklist, null);
+            builder.setView(dialogview);
+            builder.setMessage("Create New Checklist")
+                    .setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            EditText tv =
+                                    (EditText) dialogview.findViewById(R.id.new_checklist_name);
+                            String new_cl_name = tv.getText().toString();
+                            Checklist cl = new Checklist();
+                            cl.setChecklist_name(new_cl_name);
+                            cl.setOwner(Database.getDB().getEmail());
+                            cl.setCreator(Database.getDB().getEmail());
+                            cl.addAcl(Database.getDB().getEmail());
+                            Database.getDB().CreateChecklist(cl);
+                        }
+                    })
+                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                        }
+                    });
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
     private class LongClickListener implements View.OnLongClickListener {
         @Override
         public boolean onLongClick(View v) {
@@ -209,6 +250,19 @@ public class ChecklistDrawerActivity extends AppCompatActivity
                     .commit();
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.closeDrawer(GravityCompat.START);
+        }
+    }
+
+    private class NewChecklist implements View.OnClickListener {
+        NewChecklistDialog dialog;
+
+        NewChecklist() {
+            dialog = new NewChecklistDialog();
+        }
+
+        @Override
+        public void onClick(View v) {
+            dialog.show(getFragmentManager(), "New Checklist");
         }
     }
 }

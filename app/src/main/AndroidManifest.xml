@@ -46,12 +46,6 @@
         </activity>
         <activity android:name=".NewChecklistItemActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".ManageChecklists">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".NewChecklistActivity" />
         <activity android:name=".ShareChecklistActivity" />
         <activity android:name=".ManagePendingActivity"></activity>
         <activity android:name=".ViewPendingActivity" />

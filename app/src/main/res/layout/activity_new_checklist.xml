@@ -22,29 +22,4 @@
         android:selectAllOnFocus="true"
         android:text="New Checklist Name" />
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="Enter Checklist Name" />
-
-    <Button
-        android:id="@+id/save_checklist"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/new_checklist_name"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="116dp"
-        android:text="Save" />
-
-    <CheckBox
-        android:id="@+id/makeDefault"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/new_checklist_name"
-        android:layout_below="@+id/new_checklist_name"
-        android:layout_marginTop="43dp"
-        android:text="Make Default Checklist" />
 </RelativeLayout>
