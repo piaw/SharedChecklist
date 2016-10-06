@@ -126,9 +126,14 @@ public class ManagePendingActivity extends Fragment implements Database.FetchChe
     class StartViewPendingActivity implements View.OnClickListener {
         public void onClick(View v) {
             Checklist cl = (Checklist) v.getTag();
-            Intent intent = new Intent(getActivity(), ViewPendingActivity.class);
-            intent.putExtra("checklist", cl);
-            startActivityForResult(intent, ACCEPT_OR_REJECT);
+            Fragment fragment = new ViewPendingActivity();
+            Bundle args = new Bundle();
+            args.putSerializable("checklist", cl);
+            fragment.setArguments(args);
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.content_view, fragment)
+                    .addToBackStack("manage pending")
+                    .commit();
         }
     }
 }

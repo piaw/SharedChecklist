@@ -1,8 +1,10 @@
 package net.piaw.sharedchecklist;
 
+import android.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -10,7 +12,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class ViewPendingActivity extends AppCompatActivity {
+public class ViewPendingActivity extends Fragment {
     ListView cl_preview;
     TextView cl_name_view;
     Button accept;
@@ -18,22 +20,24 @@ public class ViewPendingActivity extends AppCompatActivity {
     Checklist mChecklist;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_pending);
-        mChecklist = (Checklist) getIntent().getSerializableExtra("checklist");
-        View pending_cl_header = getLayoutInflater().inflate(R.layout.pending_lv_header, null);
-        TextView header = (TextView) pending_cl_header.findViewById(R.id.pending_lv_header);
-        header.setText(mChecklist.getChecklist_name());
-        cl_preview = (ListView) findViewById(R.id.pending_cl_view);
-        accept = (Button) findViewById(R.id.accept_share);
-        reject = (Button) findViewById(R.id.reject_share);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_view_pending, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mChecklist = (Checklist) getArguments().getSerializable("checklist");
+        getActivity().setTitle("Accept/Reject Shared Checklist");
+        cl_preview = (ListView) getView().findViewById(R.id.pending_cl_view);
+        accept = (Button) getView().findViewById(R.id.accept_share);
+        reject = (Button) getView().findViewById(R.id.reject_share);
         ArrayList<String> checklist_items = new ArrayList<>();
         for (int i = 0; i < mChecklist.getItems().size(); ++i) {
             checklist_items.add(mChecklist.getItems().get(i).getLabel());
         }
-        cl_preview.addHeaderView(pending_cl_header);
-        cl_preview.setAdapter(new ArrayAdapter<String>(this,
+        cl_preview.setAdapter(new ArrayAdapter<String>(getActivity(),
                 android.R.layout.simple_list_item_1, checklist_items));
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,8 +45,7 @@ public class ViewPendingActivity extends AppCompatActivity {
                 Database.getDB().getUser().addChecklist(mChecklist.getId());
                 Database.getDB().getUser().getPending_checklists().remove(mChecklist.getId());
                 Database.getDB().UpdateUser();
-                setResult(ManagePendingActivity.ACCEPT_OR_REJECT);
-                finish();
+                getFragmentManager().popBackStack();
             }
         });
 
@@ -51,8 +54,7 @@ public class ViewPendingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Database.getDB().getUser().getPending_checklists().remove(mChecklist.getId());
                 Database.getDB().UpdateUser();
-                setResult(ManagePendingActivity.ACCEPT_OR_REJECT);
-                finish();
+                getFragmentManager().popBackStack();
             }
         });
     }
