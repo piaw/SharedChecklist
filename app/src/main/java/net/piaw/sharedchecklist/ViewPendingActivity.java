@@ -45,7 +45,7 @@ public class ViewPendingActivity extends Fragment {
                 Database.getDB().getUser().addChecklist(mChecklist.getId());
                 Database.getDB().getUser().getPending_checklists().remove(mChecklist.getId());
                 Database.getDB().UpdateUser();
-                getFragmentManager().popBackStack();
+                getActivity().finish();
             }
         });
 
@@ -54,7 +54,7 @@ public class ViewPendingActivity extends Fragment {
             public void onClick(View v) {
                 Database.getDB().getUser().getPending_checklists().remove(mChecklist.getId());
                 Database.getDB().UpdateUser();
-                getFragmentManager().popBackStack();
+                getActivity().finish();
             }
         });
     }

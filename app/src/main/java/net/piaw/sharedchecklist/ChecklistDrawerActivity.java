@@ -96,6 +96,8 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         setContentView(R.layout.activity_checklist_drawer);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
         mPendingChecklists = new SetupPendingChecklists();
         mNewChecklist = new NewChecklist();
         MobileAds.initialize(getApplicationContext(),
@@ -120,6 +122,21 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         TextView email = (TextView) findViewById(R.id.userid);
         email.setText(Database.unEscapeEmailAddress(mUser.getEmail()));
         drawer.openDrawer(GravityCompat.START);
+        Intent intent = getIntent();
+        Checklist cl = (Checklist) intent.getSerializableExtra("checklist");
+        if (cl != null) {
+            // it's a notification, open up the view pending activity
+            drawer.closeDrawer(GravityCompat.START);
+            Fragment fragment = new ViewPendingActivity();
+            Bundle args = new Bundle();
+            args.putSerializable("checklist", cl);
+            fragment.setArguments(args);
+            FragmentManager manager = getFragmentManager();
+            manager.beginTransaction()
+                    .replace(R.id.content_view, fragment)
+                    .commit();
+        }
+
     }
 
     @Override

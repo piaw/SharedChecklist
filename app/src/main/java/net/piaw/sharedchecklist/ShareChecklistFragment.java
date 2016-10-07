@@ -133,6 +133,7 @@ public class ShareChecklistFragment extends Fragment {
                                 "the app ShareChecklist so we can share it.")
                         .build();
                 startActivityForResult(intent, REQUEST_INVITE);
+                getFragmentManager().popBackStackImmediate();
                 return;
             }
 
@@ -144,6 +145,7 @@ public class ShareChecklistFragment extends Fragment {
                 Database.getDB().UpdateUser(user);
                 refreshmACLView();
             }
+            getFragmentManager().popBackStackImmediate();
         }
     }
 }

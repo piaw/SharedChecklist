@@ -41,9 +41,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".ChecklistDisplay">
-            <intent-filter>
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".NewChecklistItemActivity" />
         <activity android:name=".SettingsActivity" />
@@ -53,6 +50,9 @@
             android:name=".ChecklistDrawerActivity"
             android:label="@string/title_activity_checklist_drawer"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -60,10 +60,10 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                         .setContentTitle("SharedChecklist")
                         .setContentText(cl.getChecklist_name() + "(" +
                                 Database.unEscapeEmailAddress(cl.getOwner()) + ")" + " shared.");
-        Intent resultIntent = new Intent(getActivity(), ViewPendingActivity.class);
+        Intent resultIntent = new Intent(getActivity(), ChecklistDrawerActivity.class);
         resultIntent.putExtra("checklist", cl);
         TaskStackBuilder stackbuilder = TaskStackBuilder.create(getActivity());
-        stackbuilder.addParentStack(ViewPendingActivity.class);
+        stackbuilder.addParentStack(ChecklistDrawerActivity.class);
         stackbuilder.addNextIntent(resultIntent);
         PendingIntent resultPendingIntent = stackbuilder.getPendingIntent(0,
                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -196,6 +196,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     }
 
     public class DeleteChecklistDialogFragment extends DialogFragment {
+
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the Builder class for convenient dialog construction
@@ -205,11 +206,15 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                         public void onClick(DialogInterface dialog, int id) {
                             User user = Database.getDB().getUser();
                             if (!mChecklist.getOwner().equals(user.getEmail())) {
-                                Toast.makeText(getActivity(), "Not owner. Cannot delete."
-                                                + mChecklist.getOwner(),
-                                        Toast.LENGTH_SHORT).show();
-                                Toast.makeText(getActivity(), "you:" + user.getEmail(),
-                                        Toast.LENGTH_SHORT).show();
+                                // just remove it from the user's checklists but do not
+                                // delete the checklist itself from the database
+                                user.getChecklists().remove(mChecklist.getId());
+                                Database.getDB().UpdateUser();
+                                DrawerLayout drawer =
+                                        (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+                                drawer.openDrawer(GravityCompat.START);
+                                getActivity().getFragmentManager().beginTransaction()
+                                        .remove(ChecklistDisplay.this).commit();
                                 return;
                             }
                             user.getChecklists().remove(mChecklist.getId());
