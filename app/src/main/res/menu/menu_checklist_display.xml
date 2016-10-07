@@ -9,6 +9,12 @@
         app:showAsAction="ifRoom" />
 
     <item
+        android:id="@+id/action_share"
+        android:icon="@drawable/share"
+        android:title="share"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/action_copy"
         android:icon="@drawable/copy"
         android:title="copy"

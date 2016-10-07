@@ -150,6 +150,17 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                 new DeleteChecklistDialogFragment().show(getFragmentManager(), "Confirm");
                 return true;
 
+            case R.id.action_share:
+                Fragment fragment = new ShareChecklistFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("checklist", mChecklist);
+                fragment.setArguments(args);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_view, fragment)
+                        .addToBackStack("share checklist")
+                        .commit();
+                return true;
+
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.

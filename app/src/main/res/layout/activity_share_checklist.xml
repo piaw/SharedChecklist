@@ -1,50 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_share_checklist"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="net.piaw.sharedchecklist.ShareChecklistActivity">
+    android:paddingTop="@dimen/activity_vertical_margin">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="0.5">
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="22dp"
-            android:layout_marginTop="30dp"
-            android:text="Checklist Name:" />
-
-        <TextView
-            android:id="@+id/checklist_label"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/textView3"
-            android:layout_marginStart="38dp"
-            android:layout_toEndOf="@+id/textView3" />
-
-        <EditText
-            android:id="@+id/sharee_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView3"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="34dp"
-            android:ems="10"
-            android:inputType="textEmailAddress"
-            android:selectAllOnFocus="true"
-            android:text="user@emailaddress.com" />
 
         <Button
             android:id="@+id/share_button"
@@ -54,6 +23,25 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="21dp"
             android:text="Share" />
+
+        <EditText
+            android:id="@+id/sharee_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/share_button"
+            android:layout_marginEnd="17dp"
+            android:ems="10"
+            android:inputType="textEmailAddress"
+            android:selectAllOnFocus="true"
+            android:text="user@emailaddress.com" />
+
+        <Button
+            android:id="@+id/browse_contacts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignTop="@+id/sharee_email"
+            android:text="Browse" />
     </RelativeLayout>
 
     <LinearLayout
