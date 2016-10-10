@@ -1,5 +1,6 @@
 package net.piaw.sharedchecklist;
 
+import android.Manifest;
 import android.app.Fragment;
 import android.content.Intent;
 import android.database.Cursor;
@@ -7,6 +8,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -32,6 +34,7 @@ import static android.app.Activity.RESULT_OK;
 public class ShareChecklistFragment extends Fragment {
     public final static int REQUEST_INVITE = 0;
     public final static int CONTACT_PICKER_RESULT = 1;
+    public final static int READ_CONTACTS_CODE = 2;
     public final static String Tag = "ShareChecklistFragment";
 
     Checklist mChecklist;
@@ -79,6 +82,9 @@ public class ShareChecklistFragment extends Fragment {
     }
 
     private void LaunchContactPicker(View view) {
+        ActivityCompat.requestPermissions(getActivity(),
+                new String[]{Manifest.permission.READ_CONTACTS},
+                READ_CONTACTS_CODE);
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(contactPickerIntent, CONTACT_PICKER_RESULT);
