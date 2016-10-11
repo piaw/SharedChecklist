@@ -159,10 +159,7 @@ public class FacebookLoginActivity extends Activity {
                                     Toast.LENGTH_SHORT).show();
                         } else {
                             Log.d(Tag, "sign in successful!");
-                            Database db = new Database(mEmail, FacebookLoginActivity.this,
-                                    // only show on fetch if import!
-                                    !(FacebookLoginActivity.this.getIntent()
-                                            .getBooleanExtra("import", false)));
+                            Database db = new Database(mEmail, FacebookLoginActivity.this, true);
                             Database.setDB(db);
                             if (getParent() == null) {
                                 setResult(Activity.RESULT_OK);
