@@ -78,6 +78,21 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        if (Database.getDB() == null) {
+            RedoFacebookLogin();
+
+        }
+    }
+
+    private void RedoFacebookLogin() {
+        // database is gone!
+        Intent intent = new Intent(this, FacebookLoginActivity.class);
+        startActivity(intent);
+    }
+
     public void onDataChange(DataSnapshot snapshot) {
         Log.v(Tag, "onDataChange!");
         mUser = snapshot.getValue(User.class);
@@ -111,6 +126,10 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         mChecklists = new ArrayList<>();
+        if (Database.getDB() == null) {
+            RedoFacebookLogin();
+            return;
+        }
         mUser = Database.getDB().getUser();
         Database.getDB().getUserDB().child(mUser.getEmail()).addValueEventListener(this);
         mLV = (ListView) navigationView.findViewById(R.id.manage_checklist_lv);

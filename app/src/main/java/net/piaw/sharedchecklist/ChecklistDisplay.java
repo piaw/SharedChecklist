@@ -85,6 +85,12 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if (Database.getDB() == null) {
+            Intent intent = new Intent(getActivity(), FacebookLoginActivity.class);
+            startActivity(intent);
+            return;
+        }
+
         Toolbar checklistToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         ((AppCompatActivity) getActivity()).setSupportActionBar(checklistToolbar);
         mChecklist = (Checklist) getArguments().getSerializable("checklist");

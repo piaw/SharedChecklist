@@ -15,8 +15,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
-
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
@@ -80,18 +78,6 @@ public class Database {
         return mEmail;
     }
 
-    public void setDefaultChecklist(Checklist cl) {
-        if (cl.getId().equals("")) {
-            Log.e(Tag, "checklist id is null!");
-            Toast.makeText(getApplicationContext(),
-                    "Checklist is corrupt", Toast.LENGTH_LONG).show();
-            return;
-        }
-        // assert mUser is valid!
-        mUser.setDefault_checklist(cl.getId());
-        mUserDB.child(mEmail).setValue(mUser);
-    }
-
     public void fetchChecklistFromURI(Uri uri, FetchChecklistCallback cb) {
         Log.d(Tag, "fetchChecklistfromURI:" + uri.toString());
         String url = uri.toString();
@@ -120,23 +106,6 @@ public class Database {
         mChecklistDB.child(cl.getId()).removeValue();
     }
 
-    private Checklist createDefaultChecklist() {
-        Checklist checklist = new Checklist();
-        checklist.setCreator(mUser.getEmail());
-        checklist.setOwner(mUser.getEmail());
-        checklist.setItems(new ArrayList<ChecklistItem>());
-        checklist.addAcl(mEmail);
-
-        checklist = CreateChecklist(checklist);
-        UpdateDefaultChecklist(checklist);
-        return checklist;
-    }
-
-    public void UpdateDefaultChecklist(Checklist cl) {
-        mUser.setDefault_checklist(cl.getId());
-        mUserDB.child(mEmail).setValue(mUser);
-    }
-
     @NonNull
     public Checklist CreateChecklist(Checklist checklist) {
         String checklist_id = mChecklistDB.push().getKey();
@@ -152,9 +121,7 @@ public class Database {
                 addChildEventListener(new SharedChecklistEventListener((cb)));
     }
 
-    private void ShowChecklist(Checklist checklist) {
-        if (!mShowOnFetch) return;
-        Log.d(Tag, "Showing checklist:" + checklist.getId());
+    private void ShowChecklistDrawer() {
         Intent intent = new Intent(getApplicationContext(),
                 ChecklistDrawerActivity.class);
         mActivity.startActivity(intent);
@@ -266,58 +233,20 @@ public class Database {
             if (dataSnapshot.exists()) {
                 Log.d(Tag, "User exists!");
                 mUser = dataSnapshot.getValue(User.class);
-
-                // now retrieve default checklist
-                if (!mUser.getDefault_checklist().equals("")) {
-                    Log.d(Tag, "User has default checklist!");
-                    ValueEventListener cl_listener = new ChecklistListener();
-                    mChecklistDB.child(mUser.getDefault_checklist()).
-                            addListenerForSingleValueEvent(cl_listener);
-
-                } else {
-                    Log.d(Tag, "Creating default checklist for existing user");
-                    ShowChecklist(createDefaultChecklist());
-                }
             } else {
                 Log.d(Tag, "Creating new user");
                 // user doesn't exist, now create new user
                 mUser = new User();
                 mUser.setEmail(mEmail);
-                // create new checklist as the default checklist
-                // note that createDefaultChecklist() also writes to the UserDB
-                // so we don't have to do it
-                ShowChecklist(createDefaultChecklist());
+                UpdateUser();
             }
+            ShowChecklistDrawer();
         }
 
         @Override
         public void onCancelled(DatabaseError dbErr) {
             Log.w(Tag, "User retrieval failed", dbErr.toException());
             Toast.makeText(getApplicationContext(), "Failed to load user",
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    class ChecklistListener implements ValueEventListener {
-        @Override
-        public void onDataChange(DataSnapshot dataSnapshot) {
-            Log.d(Tag, "ChecklistListener: onDataChange");
-            if (dataSnapshot.exists()) {
-                Log.d(Tag, "Checklist exists!");
-                Checklist checklist = dataSnapshot.getValue(Checklist.class);
-                ShowChecklist(checklist);
-            } else {
-                Log.d(Tag, "No default checklist --- creating");
-                // no existing checklist! create it. For now, just stick it into the
-                // Default checklist
-                ShowChecklist(createDefaultChecklist());
-            }
-        }
-
-        @Override
-        public void onCancelled(DatabaseError dbErr) {
-            Log.w(Tag, "User retrieval failed", dbErr.toException());
-            Toast.makeText(getApplicationContext(), "Failed to load checklist",
                     Toast.LENGTH_SHORT).show();
         }
     }

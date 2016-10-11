@@ -10,14 +10,12 @@ public class User {
     private String email;
     private ArrayList<String> checklists;
     private ArrayList<String> pending_checklists;
-    private String default_checklist;
     private boolean isPro;
 
     public User() {
         email = "";
         checklists = new ArrayList<>();
         pending_checklists = new ArrayList<>();
-        default_checklist = "";
     }
 
     public String getEmail() {
@@ -40,13 +38,6 @@ public class User {
         checklists.add(checklist);
     }
 
-    public String getDefault_checklist() {
-        return default_checklist;
-    }
-
-    public void setDefault_checklist(String default_checklist) {
-        this.default_checklist = default_checklist;
-    }
 
     public ArrayList<String> getPending_checklists() {
         return pending_checklists;
