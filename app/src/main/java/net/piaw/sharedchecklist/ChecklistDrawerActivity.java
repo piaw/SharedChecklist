@@ -1,5 +1,6 @@
 package net.piaw.sharedchecklist;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -196,7 +197,8 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         return true;
     }
 
-    private class NewChecklistDialog extends DialogFragment {
+    @SuppressLint("ValidFragment")
+    public class NewChecklistDialog extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             // Use the Builder class for convenient dialog construction

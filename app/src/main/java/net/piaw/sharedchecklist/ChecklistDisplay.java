@@ -1,5 +1,6 @@
 package net.piaw.sharedchecklist;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
@@ -33,6 +34,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 
+@SuppressLint("ValidFragment")
 public class ChecklistDisplay extends Fragment implements ValueEventListener,
         Database.SharedChecklistCallback, Database.FetchChecklistCallback {
     public final int DISPLAY_SETTINGS = 0;
