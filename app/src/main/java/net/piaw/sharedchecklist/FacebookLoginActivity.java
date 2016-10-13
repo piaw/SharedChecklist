@@ -169,7 +169,6 @@ public class FacebookLoginActivity extends Activity {
                             finish();
                         }
 
-                        // ...
                     }
                 });
     }

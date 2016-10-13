@@ -83,7 +83,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         super.onRestart();
         if (Database.getDB() == null) {
             RedoFacebookLogin();
-
+            finish();
         }
     }
 
@@ -128,6 +128,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         mChecklists = new ArrayList<>();
         if (Database.getDB() == null) {
             RedoFacebookLogin();
+            finish();
             return;
         }
         mUser = Database.getDB().getUser();

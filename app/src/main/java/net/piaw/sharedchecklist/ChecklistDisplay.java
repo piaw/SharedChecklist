@@ -127,6 +127,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        if (mChecklist == null) return; // yikes!
         inflater.inflate(R.menu.menu_checklist_display, menu);
         if (mChecklist.getId().equals("")) {
             Log.e(Tag, "checklist id is null!");
