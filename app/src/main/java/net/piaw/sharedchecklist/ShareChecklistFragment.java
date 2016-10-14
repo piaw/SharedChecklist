@@ -3,12 +3,14 @@ package net.piaw.sharedchecklist;
 import android.Manifest;
 import android.app.Fragment;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -82,9 +84,13 @@ public class ShareChecklistFragment extends Fragment {
     }
 
     private void LaunchContactPicker(View view) {
-        ActivityCompat.requestPermissions(getActivity(),
-                new String[]{Manifest.permission.READ_CONTACTS},
-                READ_CONTACTS_CODE);
+        int permissionCheck = ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.READ_CONTACTS);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACTS_CODE);
+        }
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK,
                 ContactsContract.Contacts.CONTENT_URI);
         startActivityForResult(contactPickerIntent, CONTACT_PICKER_RESULT);
