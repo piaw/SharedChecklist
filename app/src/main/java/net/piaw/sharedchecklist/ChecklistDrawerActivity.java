@@ -64,11 +64,10 @@ public class ChecklistDrawerActivity extends AppCompatActivity
     private void refreshChecklists() {
         mChecklists = new ArrayList<>();
         // fetch all checklists
-        User user = Database.getDB().getUser();
-        Log.v(Tag, "getting checklists for user:" + user.getEmail());
-        for (int i = 0; i < user.getChecklists().size(); ++i) {
-            Log.v(Tag, "fetching:" + user.getChecklists().get(i));
-            Database.getDB().FetchChecklist(this, user.getChecklists().get(i));
+        Log.v(Tag, "getting checklists for user:" + mUser.getEmail());
+        for (int i = 0; i < mUser.getChecklists().size(); ++i) {
+            Log.v(Tag, "fetching:" + mUser.getChecklists().get(i));
+            Database.getDB().FetchChecklist(this, mUser.getChecklists().get(i));
         }
     }
 

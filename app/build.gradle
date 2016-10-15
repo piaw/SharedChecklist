@@ -13,8 +13,8 @@ android {
         applicationId "net.piaw.sharedchecklist"
         minSdkVersion 19
         targetSdkVersion 23
-        versionCode 8
-        versionName "1.08"
+        versionCode 9
+        versionName "1.09"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
