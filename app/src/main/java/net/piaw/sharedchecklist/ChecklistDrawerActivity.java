@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -244,7 +245,10 @@ public class ChecklistDrawerActivity extends AppCompatActivity
                         }
                     });
             // Create the AlertDialog object and return it
-            return builder.create();
+            Dialog dialog = builder.create();
+            dialog.getWindow().setSoftInputMode(
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            return dialog;
         }
     }
 
