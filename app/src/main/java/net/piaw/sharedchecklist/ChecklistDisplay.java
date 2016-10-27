@@ -37,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 @SuppressLint("ValidFragment")
 public class ChecklistDisplay extends Fragment implements ValueEventListener,
         Database.SharedChecklistCallback, Database.FetchChecklistCallback {
+    private static final int MENU_MERGE_ITEM = 100;
     public final int DISPLAY_SETTINGS = 0;
     final String Tag = "ChecklistDisplay";
     Checklist mChecklist;
@@ -132,6 +133,15 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
         if (mChecklist.getId().equals("")) {
             Log.e(Tag, "checklist id is null!");
             Toast.makeText(getActivity(), "Checklist is Corrupt!", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        String lhs = mChecklist.getOwner();
+        String rhs = Database.getDB().getEmail();
+
+        if (lhs.equals(rhs)) {
+            // add merge icon
+            menu.add(Menu.NONE, MENU_MERGE_ITEM, Menu.NONE, "merge").setIcon(R.drawable.merge);
         }
     }
 
@@ -167,6 +177,17 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                 getFragmentManager().beginTransaction()
                         .replace(R.id.content_view, fragment)
                         .addToBackStack("share checklist")
+                        .commit();
+                return true;
+
+            case MENU_MERGE_ITEM:
+                fragment = new MergeActivityFragment();
+                args = new Bundle();
+                args.putSerializable("checklist", mChecklist);
+                fragment.setArguments(args);
+                getFragmentManager().beginTransaction()
+                        .replace(R.id.content_view, fragment)
+                        .addToBackStack("merge checklist")
                         .commit();
                 return true;
 

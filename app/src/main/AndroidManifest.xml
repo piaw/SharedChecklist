@@ -40,11 +40,10 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChecklistDisplay">
-        </activity>
+        <activity android:name=".ChecklistDisplay"></activity>
         <activity android:name=".NewChecklistItemActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".ManagePendingActivity"></activity>
+        <activity android:name=".ManagePendingActivity" />
         <activity android:name=".ViewPendingActivity" />
         <activity
             android:name=".ChecklistDrawerActivity"
@@ -54,6 +53,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MergeActivity"></activity>
     </application>
 
 </manifest>
