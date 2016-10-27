@@ -113,6 +113,9 @@ public class ChecklistAdapter extends BaseAdapter {
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
                     InputMethodManager.HIDE_IMPLICIT_ONLY);
             return view;
+        } else if (mShownItems.get(pos).isEditEntry()) {
+            // everything already set in long click listener
+            return mShownItems.get(pos).getEditView();
         }
         String label = fetchItemAt(pos).getLabel();
         simpleCheckedTextView.setText(label);
@@ -127,6 +130,8 @@ public class ChecklistAdapter extends BaseAdapter {
         }
         simpleCheckedTextView.setOnClickListener(
                 new PosBasedOnClickListener(simpleCheckedTextView, pos));
+        simpleCheckedTextView.setOnLongClickListener(
+                new PosBasedOnLongClickListener(simpleCheckedTextView, pos));
 
         return view;
     }
@@ -141,11 +146,15 @@ public class ChecklistAdapter extends BaseAdapter {
     class ChecklistAdapterItem {
         ChecklistItem item;
         EditText new_entry;
+        View edit_view;
         boolean isNewEntry;
+        boolean isEditEntry;
 
         public ChecklistAdapterItem(ChecklistItem item) {
             this.item = item;
+            edit_view = null;
             isNewEntry = false;
+            isEditEntry = false;
         }
 
         public ChecklistAdapterItem(boolean isNewEntry) {
@@ -160,12 +169,28 @@ public class ChecklistAdapter extends BaseAdapter {
             return isNewEntry;
         }
 
+        public boolean isEditEntry() {
+            return isEditEntry;
+        }
+
         public EditText getEditText() {
             return this.new_entry;
         }
 
         public void setEditText(EditText editText) {
             this.new_entry = editText;
+        }
+
+        public View getEditView() {
+            return edit_view;
+        }
+
+        public void setEditView(View v) {
+            edit_view = v;
+        }
+
+        public void setEditEntry() {
+            isEditEntry = true;
         }
     }
 
@@ -201,6 +226,54 @@ public class ChecklistAdapter extends BaseAdapter {
                 }
                 Database.getDB().UpdateChecklist(mChecklist);
             }
+        }
+    }
+
+
+    class PosBasedOnLongClickListener implements CheckedTextView.OnLongClickListener {
+        int mPos;
+        View mView;
+        ChecklistAdapterItem mItem;
+
+        PosBasedOnLongClickListener(View view, int pos) {
+            mPos = pos;
+            mView = view;
+            mItem = mShownItems.get(mPos);
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            CheckedTextView ctv = (CheckedTextView) v;
+
+            View view = ((LayoutInflater) mActivity.getApplicationContext().getSystemService(
+                    Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list_edititem,
+                    null);
+            final EditText new_entry = (EditText) view.findViewById(R.id.editTextView);
+            new_entry.setText(ctv.getText());
+            Button done = (Button) view.findViewById(R.id.doneButton);
+            done.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.v(Tag, "EditChecklistItem");
+                    String new_checklist_label = new_entry.getText().toString();
+                    Log.v(Tag, "New label:" + new_checklist_label);
+                    mItem.getItem().setLabel(new_checklist_label);
+                    Database.getDB().UpdateChecklist(mChecklist);
+                    InputMethodManager imm =
+                            (InputMethodManager) mActivity.getSystemService(
+                                    Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            });
+            mShownItems.get(mPos).setEditView(view);
+            mShownItems.get(mPos).setEditEntry();
+            notifyDataSetChanged();
+            new_entry.requestFocus();
+            InputMethodManager imm =
+                    (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,
+                    InputMethodManager.HIDE_IMPLICIT_ONLY);
+            return true;
         }
     }
 }
