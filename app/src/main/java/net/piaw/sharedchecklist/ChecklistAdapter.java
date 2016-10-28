@@ -34,6 +34,17 @@ public class ChecklistAdapter extends BaseAdapter {
         mSettings = Settings.getInstance(activity);
         mChecklist = checklist;
         mActivity = activity;
+        notifyDataSetChanged();
+    }
+
+    public void addNewChecklistItem() {
+        ChecklistAdapterItem item = new ChecklistAdapterItem(true);
+        mShownItems.add(item);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
         mShownItems = new ArrayList<>();
 
         // shallow-copy all checklist items into the array list
@@ -50,13 +61,7 @@ public class ChecklistAdapter extends BaseAdapter {
                 mShownItems.add(new ChecklistAdapterItem(item));
             }
         }
-
-    }
-
-    public void addNewChecklistItem() {
-        ChecklistAdapterItem item = new ChecklistAdapterItem(true);
-        mShownItems.add(item);
-        notifyDataSetChanged();
+        super.notifyDataSetChanged();
     }
 
     @Override

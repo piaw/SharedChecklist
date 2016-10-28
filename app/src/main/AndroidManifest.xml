@@ -42,7 +42,6 @@
         </activity>
         <activity android:name=".ChecklistDisplay"></activity>
         <activity android:name=".NewChecklistItemActivity" />
-        <activity android:name=".SettingsActivity" />
         <activity android:name=".ManagePendingActivity" />
         <activity android:name=".ViewPendingActivity" />
         <activity

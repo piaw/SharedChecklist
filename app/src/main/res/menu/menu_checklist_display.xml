@@ -26,4 +26,16 @@
         android:title="delete"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/setting_hide_when_checked"
+        android:checkable="true"
+        android:title="hide when checked"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/setting_strikethrough_when_checked"
+        android:checkable="true"
+        android:title="strikethrough when checked"
+        app:showAsAction="never" />
+
 </menu>

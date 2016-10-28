@@ -44,6 +44,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
     ListView mLV;
     ChecklistAdapter mAdapter;
     ShareActionProvider mShareActionProvider;
+    Settings mPrefs;
 
     public ChecklistDisplay() {
     }
@@ -110,6 +111,7 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
         AdView mAdView = (AdView) getActivity().findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
+        mPrefs = Settings.getInstance(getActivity());
     }
 
     @Override
@@ -143,6 +145,10 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
             // add merge icon
             menu.add(Menu.NONE, MENU_MERGE_ITEM, Menu.NONE, "merge").setIcon(R.drawable.merge);
         }
+        menu.findItem(R.id.setting_hide_when_checked).setChecked(
+                mPrefs.isHideIfChecked());
+        menu.findItem(R.id.setting_strikethrough_when_checked).setChecked(
+                mPrefs.isStrikethroughIfChecked());
     }
 
     @Override
@@ -189,6 +195,21 @@ public class ChecklistDisplay extends Fragment implements ValueEventListener,
                         .replace(R.id.content_view, fragment)
                         .addToBackStack("merge checklist")
                         .commit();
+                return true;
+
+            case R.id.setting_hide_when_checked:
+                mPrefs.setHideIfChecked(!mPrefs.isHideIfChecked());
+                mPrefs.Save();
+                item.setChecked(mPrefs.isHideIfChecked());
+                mAdapter.notifyDataSetChanged();
+                return true;
+
+            case R.id.setting_strikethrough_when_checked:
+                mPrefs.setStrikethroughIfChecked(
+                        !mPrefs.isStrikethroughIfChecked());
+                mPrefs.Save();
+                item.setChecked(mPrefs.isStrikethroughIfChecked());
+                mAdapter.notifyDataSetChanged();
                 return true;
 
             default:

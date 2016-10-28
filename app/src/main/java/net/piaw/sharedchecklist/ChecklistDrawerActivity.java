@@ -173,7 +173,7 @@ public class ChecklistDrawerActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.checklist_drawer, menu);
+        // getMenuInflater().inflate(R.menu.checklist_drawer, menu);
         return true;
     }
 
@@ -187,13 +187,6 @@ public class ChecklistDrawerActivity extends AppCompatActivity
         if (id == android.R.id.home) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             drawer.openDrawer(GravityCompat.START);
-            return true;
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            // User chose the "Settings" item, show the app settings UI...
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, DISPLAY_SETTINGS);
             return true;
         }
 
