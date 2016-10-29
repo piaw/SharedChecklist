@@ -25,6 +25,7 @@ import java.util.ArrayList;
 public class ChecklistAdapter extends BaseAdapter {
     private static final StrikethroughSpan STRIKE_THROUGH_SPAN = new StrikethroughSpan();
     public final String Tag = "ChecklistAdapter";
+    boolean new_entry = false;
     private Checklist mChecklist;
     private Activity mActivity;
     private Settings mSettings;
@@ -38,8 +39,7 @@ public class ChecklistAdapter extends BaseAdapter {
     }
 
     public void addNewChecklistItem() {
-        ChecklistAdapterItem item = new ChecklistAdapterItem(true);
-        mShownItems.add(item);
+        new_entry = true;
         notifyDataSetChanged();
     }
 
@@ -60,6 +60,12 @@ public class ChecklistAdapter extends BaseAdapter {
                 // add everything
                 mShownItems.add(new ChecklistAdapterItem(item));
             }
+        }
+
+        if (new_entry) {
+            ChecklistAdapterItem item = new ChecklistAdapterItem(true);
+            mShownItems.add(item);
+            new_entry = false;
         }
         super.notifyDataSetChanged();
     }
